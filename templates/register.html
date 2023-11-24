@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static',filename='login.css')}}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>SignUp</title>
+</head>
+<body>
+<div class="box">
+    <div class="container">
+        <header>Sign Up</header>
+        <form action="/register" method="post">
+            <div class="input-field">
+                <input type="text" class="input" placeholder="Username" name="username" required>
+                <i class="bx bx-user"></i>
+            </div>
+            <div class="input-field">
+                <input type="email" class="input" id="email" placeholder="Enter email" name="email" required>
+                <i class="bx bx-envelope"></i>
+            </div>
+            <div class="input-field">
+                <input type="password" class="input" id="pwd" placeholder="Enter password" name="password" required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-field">
+                <input type="password" class="input" id="pwd" placeholder="Confirm password" name="confirm_password" required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-field">
+                <input type="number" class="input" id="age" placeholder="Age" name="age" required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-field">
+                <input type="text" class="input" id="gender" placeholder="Enter gender" name="gender" required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-field">
+                <input type="submit" value="Register" class="submit">
+                <i class="bx bx-lock-alt"></i>
+            </div>
+        </form>
+    </div>
+    </div>
+</body>
+</html>

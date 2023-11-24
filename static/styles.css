@@ -1,0 +1,71 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+header {
+    background-color: #76c7c0;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    /* width: 50px; */
+    
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 20px;
+    
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.hero {
+    background-color: #e7cda7;
+    color: #333;
+    padding: 40px;
+    text-align: center;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #76c7c0;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.featured-playlists {
+    background-color: #f5f5f5;
+    padding: 40px;
+    text-align: center;
+}
+
+.playlist {
+    margin-bottom: 20px;
+}
+
+.playlist img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+footer {
+    background-color: #76c7c0;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}

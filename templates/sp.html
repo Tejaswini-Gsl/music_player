@@ -1,0 +1,179 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Stream</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css')}}">
+</head>
+<body>
+    <header>
+        <h1>Music Stream</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Genres</a></li>
+                <li><a href="#">Playlists</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h2>Discover Your Favorite Music</h2>
+        <p>Explore a vast collection of tracks in various genres.</p>
+        <a href="#" class="cta-button">Get Started</a>
+    </section>
+
+    <section class="featured-playlists">
+        <h2>Featured Playlists</h2>
+        <div class="playlist">
+            <img src="{{ url_for('static',filename='playlist1.jpg') }}" alt="Playlist 1">
+            <h3>Chill Vibes</h3>
+        </div>
+        <div class="playlist">
+            <img src="{{ url_for('static',filename='playlist2.jpg') }}" alt="Playlist 2">
+            <h3>Upbeat Jams</h3>
+        </div>
+        <div class="playlist">
+            <img src="{{ url_for('static',filename='playlist3.jpg') }}" alt="Playlist 3">
+            <h3>Mellow Melodies</h3>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Music Stream</p>
+    </footer>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Stream</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styless.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='slideshow.css') }}" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-hsO5sQBg/z/8GaPlLgBMrBYL/HU8l+1NvQu3r1VZ9gUr3AYK/N6LTMxhdp3sco" crossorigin="anonymous">
+
+</head>
+<body>
+    <!-- Add this code below the existing toggle button in your HTML file -->
+<div class="navbar">
+    <div id="toggle-btn"><i class="material-icons">menu</i></div>
+    <div class="search-login-section">
+        <div class="search-bar">
+            <form action="/music" method="POST">
+            <input type="text" placeholder="Search" name="song">
+            <button type="submit"><i class="material-icons">search</i></button>       
+            </form>
+        </div>
+        <div class="login-section">
+            {% if is_logged_in %}
+                <img src="{{ url_for('static',filename='playlist1.jpg') }}" alt="User Profile" class="profile-picture">
+                <a href="/logout" class="logout-button">Logout</a>
+            {% else %}
+                <a href="/register" class="signup-button">Sign Up</a>
+                <a href="/login" class="login-button">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+    
+    <div class="container">
+       
+        <nav class="sidebar">
+        
+            <h1 class="animate__animated animate__fadeIn">Music Stream</h1>
+            <ul>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Home</a></li>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Genres</a></li>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Playlists</a></li>
+                <li><a href="/payment" class="animate__animated animate__fadeInDown">Payment</a></li>
+                <li><a href="#" class="animate__animated animate__fadeInDown">About</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <header>
+                <!-- <h2 class="animate__animated animate__fadeIn">Discover Your Favorite Music</h2>
+                <p class="animate__animated animate__fadeIn">Explore a vast collection of tracks in various genres.</p>
+                <a href="#" class="cta-button animate__animated animate__fadeInUp">Get Started</a> -->
+               
+                <!-- <div class="user-section">
+                    <a href="#" class="login-button" id="loginBtn">Login</a>
+                    <img src="{{ url_for('static',filename='playlist1.jpg') }}" alt="Profile Picture" class="profile-picture" id="profilePicture">
+                </div>
+                <div class="user-section">
+                    {% if is_logged_in %}
+                        <a href="#" class="profile-picture" id="profilePicture"></a>
+                    {% else %}
+                        <a href="/login" class="login-button">Login</a>
+                    {% endif %}
+                </div>    -->
+                <div id="topSlideshow" class="slideshow">
+                    {% for image in slide_images %}
+                        <div class="slide fade">
+                            <img src="{{ url_for('static',filename=image) }}" alt="Top Slide">
+                        </div>
+                    {% endfor %}
+                </div>
+                
+
+        
+
+            </header>
+
+
+            <section class="featured-playlists animate__animated animate__fadeIn">
+                <h2>Featured Playlists</h2>
+            </section>
+
+            <div class="playlist-container">
+                <div class="playlist">
+                    <img src="{{ url_for('static',filename='playlist3.jpg') }}" alt="Playlist 1">
+                    <h3>Chill Vibes</h3>
+                </div>
+                <div class="playlist">
+                    <img src="{{ url_for('static',filename='playlist3.jpg') }}" alt="Playlist 2">
+                    <h3>Upbeat Jams</h3>
+                </div>
+                <div class="playlist">
+                    <img src="{{ url_for('static',filename='playlist3.jpg') }}" alt="Playlist 3">
+                    <h3>Mellow Melodies</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="animate__animated animate__fadeIn">
+        <p>&copy; 2023 SonicBliss</p>
+    </footer>
+
+    <!-- Include animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- <script src="{{ url_for('static',filename='script.js') }}"></script> -->
+
+    <script src="{{ url_for('static',filename='slideshow.js') }}"></script>
+    <script src="{{ url_for('static',filename='script.js') }}"></script>
+    <!-- Add this line to include the sidebar CSS file -->
+<link rel="stylesheet" href="{{ url_for('static',filename='sidebar.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+{% if payment_successful %}
+<script>
+    // JavaScript code to modify the browser's URL
+    window.history.pushState({}, document.title, '/');
+</script>
+
+<script>
+    // JavaScript code to show a pop-up message
+    window.onload = function() {
+        alert("Payment was successful!");
+    };
+</script>
+{% endif %}
+
+</body>
+</html>

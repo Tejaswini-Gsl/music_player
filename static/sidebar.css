@@ -1,0 +1,37 @@
+/* sidebar.css */
+
+body.sidebar-collapsed .container {
+    grid-template-columns: 50px 1fr; /* Adjust the width as needed */
+}
+
+body.sidebar-collapsed .sidebar {
+    width: 50px; /* Adjust the width as needed */
+}
+
+body.sidebar-collapsed .sidebar h1 {
+    display: none;
+}
+
+body.sidebar-collapsed .sidebar ul {
+    padding-left: 0;
+}
+
+body.sidebar-collapsed .sidebar li {
+    text-align: center;
+}
+
+body.sidebar-collapsed .sidebar a {
+    padding: 10px;
+}
+
+body.sidebar-collapsed .content {
+    margin-left: 50px; /* Adjust the width as needed */
+}
+
+body.sidebar-collapsed #toggle-btn {
+     right: 150px; 
+}
+
+body.sidebar-collapsed .sidebar {
+    display: none;
+}

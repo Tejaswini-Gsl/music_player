@@ -1,0 +1,44 @@
+<!-- templates/payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+</head>
+<body>
+    <h1>Payment Page</h1>
+    
+    {% if is_logged_in %}
+        <form method="post" action="/payment">
+            <label for="payment_method">Payment Method:</label>
+            <select id="payment_method" name="payment_method" required>
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <!-- Add more options as needed -->
+            </select>
+            <br>
+            <label for="cardnumber">Card Number:</label>
+            <input type="text" id="cardnumber" name="cardnumber" required>
+            <br>
+            <label for="expiry">Expiry:</label>
+            <input type="text" id="expiry" name="expiry" required>
+            <small>Please enter the Expiry in MM/YY</small>
+            <br>
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" name="cvv" required>
+            <br>
+            <label for="amount">Amount:</label>
+            <input type="text" id="amount" name="amount" required>
+            <small>Please enter the amount in USD.</small>
+            <br>
+            <button type="submit">Submit Payment</button>
+        </form>
+    {% else %}
+        <p>You need to be logged in to access the payment page. <a href="/login">Login</a></p>
+    {% endif %}
+
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2a1845;
+    color: #fff;
+    min-height: 100vh; /* Set minimum height to 100% of the viewport height */
+    display: flex;
+    flex-direction: column; /* Set flex container to column layout */
+}
+
+.container {
+    display: flex;
+    flex: 1; /* Grow to fill the available space */
+   
+    margin-bottom: 20px; /* Adjust the margin as needed */
+  
+}
+
+.sidebar {
+    background-color: #3c2251;
+    padding: 20px;
+    min-width: 200px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    height: auto;
+}
+
+.sidebar h1 {
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+header {
+    background-color: #2a1845;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    display: flex;
+    align-items: center; /* Align items vertically */
+    justify-content: space-between; 
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+}
+
+.login-button {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f5a623;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.featured-playlists {
+    text-align: left;
+}
+
+.playlist-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.playlist {
+    width: 250px;
+    background-color: #4e3066;
+    border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.playlist img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.playlist h3 {
+    color: #fff;
+    margin: 0;
+}
+
+footer {
+    background-color: #482b5d;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-top: auto; /* Align the footer to the bottom */
+    height: 40px;
+}
+
+
+
+/* Add or modify the following styles in your styless.css file */
+
+/* Add or modify the following styles in your styless.css file */
+.material-icons {
+    /* Hide the text */
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 0; /* Set font-size to 0 */
+    line-height: 0;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+}
+
+#toggle-btn {
+    cursor: pointer;
+}
+
+.container {
+    margin-top: 20px; /* Adjust the margin-top as needed */
+}
+
+.navbar {
+    background-color: #6A0DAD; /* Purple color, adjust as needed */
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-login-section {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    display: flex;
+    margin-right: 10px; /* Adjust the margin as needed */
+}
+
+.search-bar input {
+    padding: 5px; /* Adjust the padding as needed */
+    border: none;
+    border-radius: 5px;
+}
+
+.search-bar button {
+    padding: 5px; /* Adjust the padding as needed */
+    background-color: #4B0082; /* Dark purple color, adjust as needed */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-section {
+    display: flex;
+    align-items: center;
+}
+
+.login-button,
+.logout-button {
+    padding: 10px;
+    margin-left: 10px;
+    background-color: #4B0082; /* Dark purple color, adjust as needed */
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-button:hover,
+.logout-button:hover {
+    background-color: #800080; /* Adjust as needed */
+}
+
+
+
+/* Add or modify the following styles in your styless.css file */
+
+/* Existing styles... */
+
+#topSlideshow {
+    width: 100%;
+    max-width: 1200px;
+    height: 400px;
+    overflow: hidden;
+    margin: 20px auto;
+}
+
+#topSlideshow .slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This ensures that the image covers the entire container without distortion */
+}
+
+/* Adjust other styles as needed... */
+
+
+/* Add or modify the following styles in your styless.css file */
+
+/* Existing styles... */
+
+.playlist {
+    flex: 0 0 calc(30% - 20px);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.playlist img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px; /* Optional: Add rounded corners to images */
+    transition: transform 0.3s ease-in-out;
+}
+
+.playlist::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Adjust the opacity (0.5 for 50% dim) */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.playlist:hover::before {
+    opacity: 1;
+}
+
+.playlist h3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Optional: Add text shadow for better visibility */
+}
+
+/* Adjust other styles as needed... */
+
+/* styless.css */
+/* Add the following styles for the "Sign Up" link */
+.signup-button {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease; /* Add transition for smooth color change */
+}
+
+.signup-button:hover{
+    color: lightgray; /* Change the color on hover */
+}
+
+
+/* ... (previous styles) ... */
+
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color on hover */
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* ... (remaining styles) ... */

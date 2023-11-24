@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Music Stream - Home{% endblock %}
+
+{% block content %}
+    <header>
+        <!-- <h2 class="animate__animated animate__fadeIn">Discover Your Favorite Music</h2>
+        <p class="animate__animated animate__fadeIn">Explore a vast collection of tracks in various genres.</p>
+        <a href="#" class="cta-button animate__animated animate__fadeInUp">Get Started</a> -->
+       
+        <!-- <div class="user-section">
+            <a href="#" class="login-button" id="loginBtn">Login</a>
+            <img src="{{ url_for('static', filename='playlist1.jpg') }}" alt="Profile Picture" class="profile-picture" id="profilePicture">
+        </div>
+        <div class="user-section">
+            {% if is_logged_in %}
+                <a href="#" class="profile-picture" id="profilePicture"></a>
+            {% else %}
+                <a href="/login" class="login-button">Login</a>
+            {% endif %}
+        </div>    -->
+        
+        <div id="topSlideshow" class="slideshow">
+            {% for image in slide_images %}
+                <div class="slide fade">
+                    <img src="{{ url_for('static', filename=image) }}" alt="Top Slide">
+                </div>
+            {% endfor %}
+        </div>
+    </header>
+
+    <section class="featured-playlists animate__animated animate__fadeIn">
+        <h2>Featured Playlists</h2>
+    </section>
+
+    <div class="playlist-container">
+        <div class="playlist">
+            <img src="{{ url_for('static', filename='playlist3.jpg') }}" alt="Playlist 1">
+            <h3>Chill Vibes</h3>
+        </div>
+        <div class="playlist">
+            <img src="{{ url_for('static', filename='playlist3.jpg') }}" alt="Playlist 2">
+            <h3>Upbeat Jams</h3>
+        </div>
+        <div class="playlist">
+            <img src="{{ url_for('static', filename='playlist3.jpg') }}" alt="Playlist 3">
+            <h3>Mellow Melodies</h3>
+        </div>
+    </div>
+{% endblock %}

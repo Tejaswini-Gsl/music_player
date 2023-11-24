@@ -1,0 +1,79 @@
+/* payment.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: url('imagea.jpg') center/cover no-repeat;
+}
+
+#payment-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.3);
+    border: 2px solid #3498db;
+    width: 400px;
+    box-sizing: border-box; /* Added to include padding and border in width */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 10px;
+    color: #333;
+}
+
+input,
+select {
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+small {
+    color: #777;
+}
+
+button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+p {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

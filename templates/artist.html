@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ artist_info.name }} - My Music App{% endblock %}
+
+{% block header %}Artist_info Profile{% endblock %}
+
+{% block content %}
+    <div class="artist_info-profile">
+        <img src="https://source.unsplash.com/random/200x200?sig=1" alt="{{ artist_info.name }} Image">
+        <h2>{{ artist_info.name }}</h2>
+        <p><strong>Age:</strong> {{ artist_info.age }}</p>
+        <p><strong>Gender:</strong> {{ artist_info.gender }}</p>
+        <p><strong>Description:</strong> {{ artist_info.artist_description }}</p>
+
+        <h3>Songs</h3>
+        <ul>
+            {% for song in song_values %}
+            <li><a href="{{ url_for('search_music_direct', filename=song.song_name) }}">{{ song.song_name }}</a></li>            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

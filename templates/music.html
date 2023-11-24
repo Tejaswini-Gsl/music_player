@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='player.css') }}">
+  
+
+  <h2>Search songs</h2>
+
+  {% if songs %}
+
+<div class="song-item-header">
+  <div class="title" >
+    <p class="details">
+    <span class="title">Title</span>
+    </p>
+  </div>
+
+  <div class="artist-header" >
+    <p class="details">
+      <span class="artist-header">Artist</span>
+    </p>
+  </div>
+
+  <div class="album" >
+    <p class="details">
+      <span class="album">Album</span>
+    </p>
+  </div>
+
+  <div class="duration" >
+    <p class="details">
+      <span class="duration">Duration</span>
+    </p>
+  </div>
+</div>
+
+
+
+
+  <div class="song-list">
+
+    {% for song in songs %}
+
+    <div class="song-item" >
+
+      <div class="controls">
+        {% if is_logged_in and has_membership %}
+        <button class="play-pause-btn" id="playPauseBtn-{{ song.song_name }}" onclick="togglePlayPause('{{ song.song_name }}')" onmouseover="highlightRow(this)">
+          <!-- Material Icons for play -->
+          <i class="material-icons" id="playIcon-{{ song.song_name }}">play_arrow</i>
+          <!-- Material Icons for pause -->
+          <i class="material-icons" id="pauseIcon-{{ song.song_name }}" style="display: none;">pause</i>
+        </button>
+        {% else %}
+        <button class="play-pause-btn" disabled>
+          <i class="material-icons">lock</i> <!-- You can use any icon to indicate that play is disabled -->
+      </button>
+        <script>
+            window.onload = function() {
+                alert("You need to be logged in and have a membership to play songs.");
+            };
+        </script>
+      {% endif %}
+      </div>
+
+      <div class="title" >
+        <p class="details">
+        <span class="title">{{ song.song_name }}</span>
+        </p>
+      </div>
+  
+    
+      <div class="artists">
+        <p class="details">
+        {% for artist in song.artist_id %}
+        
+          <span class="artist" onclick="goToArtist('{{artist}}')">
+            {{artist}}
+          </span>
+       
+        {% endfor %}
+      </p>
+        </div>
+     
+            
+
+      <div class="album" >
+        <p class="details">
+          <span class="album">{{ song.album }}</span>
+        </p>
+      </div>
+
+      <div class="duration" >
+        <p class="details">
+          <span class="duration">{{ song.runtime }}</span>
+        </p>
+      </div>
+      <!-- Add this block inside the song-item div in your loop -->
+      <div class="rating" id="rating-{{ song.song_name }}">
+        <p class="details">
+          <span class="rating">Rating: 
+          <select class="rating-stars" onchange="rateSong('{{ song.song_name }}', this.value)">
+          <option value="1" {% if song.avg_rating is defined and song.avg_rating == 1 %}selected{% endif %}>⭐️</option>
+          <option value="2" {% if song.avg_rating is defined and song.avg_rating == 2 %}selected{% endif %}>⭐️⭐️</option>
+          <option value="3" {% if song.avg_rating is defined and song.avg_rating == 3 %}selected{% endif %}>⭐️⭐️⭐️</option>
+          <option value="4" {% if song.avg_rating is defined and song.avg_rating == 4 %}selected{% endif %}>⭐️⭐️⭐️⭐️</option>
+          <option value="5" {% if song.avg_rating is defined and song.avg_rating == 5 %}selected{% endif %}>⭐️⭐️⭐️⭐️⭐️</option>
+            </select>
+        </span>
+        </p>
+      </div>
+
+   
+      <audio id="audio-{{ song.song_name }}" src="{{ url_for('stream_music', filename=song.song_name) }}"></audio>
+
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+
+
+
+  {% else %}
+
+  <p>No songs found.</p>
+
+  {% endif %}
+
+
+
+
+  <script>
+    // Your JavaScript code here
+    function rateSong(songName, rating) {
+  // Send a POST request to the server to save the rating
+  fetch(`/rate_song/${songName}/${rating}`, {
+    method: 'POST',
+    // Add other necessary headers and body if needed
+  })
+    .then(response => {
+      // Handle the response as needed
+      if (response.ok) {
+        // Optionally, you can perform actions on the client side
+        console.log('Rating submitted successfully');
+      } else {
+        // Handle errors
+        console.error('Error submitting rating');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+    
+    let highlightedRow = null;
+    let currentlyPlaying = null;
+
+    function togglePlayPause(id) {
+      let audio = document.getElementById('audio-' + id);
+      let playIcon = document.getElementById('playIcon-' + id);
+      let pauseIcon = document.getElementById('pauseIcon-' + id);
+
+      if (currentlyPlaying && currentlyPlaying !== audio) {
+        currentlyPlaying.pause();
+        let currentPlayIcon = document.getElementById('playIcon-' + currentlyPlaying.id.split('-')[1]);
+        let currentPauseIcon = document.getElementById('pauseIcon-' + currentlyPlaying.id.split('-')[1]);
+        currentPlayIcon.style.display = 'inline';
+        currentPauseIcon.style.display = 'none';
+      }
+
+      if (audio.paused) {
+        audio.play();
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'inline';
+        currentlyPlaying = audio;
+      } else {
+        audio.pause();
+        playIcon.style.display = 'inline';
+        pauseIcon.style.display = 'none';
+        currentlyPlaying = null;
+      }
+    }
+
+    function highlightRow(element) {
+      
+      if (highlightedRow) {
+        highlightedRow.style.backgroundColor = ''; // Unhighlight previous row
+      }
+
+      element.style.backgroundColor = '#A8A8A8'; // Highlight current row
+      highlightedRow = element;
+    }
+  
+
+
+    function goToArtist(artistId) {
+  window.location.href = '/artist/' + artistId;
+}
+  //   function redirectToArtist(element) {
+  //   let artistId = element.getAttribute('data-artist-id');
+  //   window.location.href = `/artist/${artistId}`;
+  // }
+  function rateSong(songName, rating) {
+  // Send a POST request to the server to save the rating
+  fetch(`/rate_song/${songName}/${rating}`, {
+    method: 'POST',
+    // Add other necessary headers and body if needed
+  })
+  .then(response => {
+    // Handle the response as needed
+    if (response.ok) {
+      // Optionally, you can perform actions on the client side
+      console.log('Rating submitted successfully');
+    } else {
+      // Handle errors
+      console.error('Error submitting rating');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+  </script>
+
+{% endblock %}

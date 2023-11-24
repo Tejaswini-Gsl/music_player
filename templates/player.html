@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styless.css') }}">
+    <!-- Add any additional styles or scripts needed for the player -->
+</head>
+<body>
+    <div class="navbar">
+        <div id="toggle-btn"><i class="material-icons">menu</i></div>
+        <div class="search-login-section">
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+                <button type="submit"><i class="material-icons">search</i></button>
+            </div>
+            <div class="login-section">
+                <!-- Add login or user profile information here if needed -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h1 class="animate__animated animate__fadeIn">Music Stream</h1>
+            <ul>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Home</a></li>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Genres</a></li>
+                <li><a href="#" class="animate__animated animate__fadeInDown">Playlists</a></li>
+                <!-- Add other navigation links as needed -->
+            </ul>
+        </nav>
+
+        <main class="content">
+            <h2>Now Playing</h2>
+            {% if songs %}
+                <ul class="song-list">
+                    {% for song in songs %}
+                        <li>
+                            <p>{{ song }}</p>
+                            <audio controls>
+                                <source src="{{ url_for('stream_music', filename=song) }}" type="audio/mp3">
+                            </audio>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No songs found matching your search.</p>
+            {% endif %}
+        </main>
+    </div>
+
+    <footer class="animate__animated animate__fadeIn">
+        <p>&copy; 2023 SonicBliss</p>
+    </footer>
+
+    <!-- Include animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='slideshow.css') }}">
+    <!-- Add any additional scripts here if needed -->
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Stream</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styless.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='slideshow.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-hsO5sQBg/z/8GaPlLgBMrBYL/HU8l+1NvQu3r1VZ9gUr3AYK/N6LTMxhdp3sco" crossorigin="anonymous">
+</head>
+<body>
+    <div class="navbar">
+        <div id="toggle-btn"><i class="material-icons">menu</i></div>
+        <div class="search-login-section">
+            <div class="search-bar">
+                <form action="/music" method="POST">
+                    <input type="text" placeholder="Search" name="song">
+                    <button type="submit"><i class="material-icons">search</i></button>
+                </form>
+            </div>
+            <div class="login-section">
+                {% if is_logged_in %}
+                    <img src="{{ url_for('static', filename='playlist1.jpg') }}" alt="User Profile" class="profile-picture">
+                    <a href="/logout" class="logout-button">Logout</a>
+                {% else %}
+                    <a href="/register" class="signup-button">Sign Up</a>
+                    <a href="/login" class="login-button">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="sidebar">
+            <h1 class="animate__animated animate__fadeIn">Music Stream</h1>
+            <ul>
+                <li><a href="/" class="animate__animated animate__fadeInDown">Home</a></li>
+                <!-- <li><a href="#" class="animate__animated animate__fadeInDown">Genres</a></li> -->
+                <!-- <li><a href="/playlist" class="animate__animated animate__fadeInDown">Playlists</a></li> -->
+                <li class="dropdown">
+                    <a href="#" class="animate__animated animate__fadeInDown">Playlists</a>
+                    <div class="dropdown-content" id="playlistDropdown">
+                        <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a> <!-- Existing playlists will be added dynamically here -->
+                    </div>
+                </li>
+                <li><a href="/payment" class="animate__animated animate__fadeInDown">Payment</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+
+
+    <footer class="animate__animated animate__fadeIn">
+        <p>&copy; 2023 SonicBliss</p>
+    </footer>
+
+    <!-- Include animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="{{ url_for('static', filename='slideshow.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Add this line to include the sidebar CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    {% if payment_successful %}
+    <script>
+        // JavaScript code to modify the browser's URL
+        window.history.pushState({}, document.title, '/');
+    </script>
+
+    <script>
+        // JavaScript code to show a pop-up message
+        window.onload = function() {
+            alert("Payment was successful!");
+        };
+    </script>
+    {% endif %}
+</body>
+</html>

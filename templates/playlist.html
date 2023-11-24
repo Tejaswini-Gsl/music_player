@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static',filename='playlist.css')}}">
+    <title>Video Player</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        video {
+            width: 80%;
+            max-width: 640px;
+            margin: 20px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Player</h1>
+    
+    <video id="myVideo" controls>
+        <source src="your-video-file.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <button id="playPauseButton" onclick="togglePlayPause()">Play / Pause</button>
+
+    <script>
+        function togglePlayPause() {
+            var video = document.getElementById("myVideo");
+
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+    </script>
+</body>
+</html>
+
