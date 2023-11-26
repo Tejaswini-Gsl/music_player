@@ -1,61 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static',filename='playlist.css')}}">
-    <title>Video Player</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-        }
+<!-- playlist.html -->
 
-        h1 {
-            color: #333;
-        }
+{% extends "base.html" %}
 
-        video {
-            width: 80%;
-            max-width: 640px;
-            margin: 20px;
-        }
+{% block content %}
+    <div class="create-playlist">
+        <h2>Create Playlist</h2>
+        <form action="/create_playlist" method="POST">
+            <label for="playlistName">Playlist Name:</label>
+            <input type="text" id="playlistName" name="playlistName" required>
+            <button type="submit">Create Playlist</button>
+        </form>
+    </div>
 
-        button {
-            background-color: #3498db;
-            color: #fff;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    <div class="existing-playlists">
+        <h2>Existing Playlists</h2>
+        {% if playlists %}
+        <div class="playlist-container">
+            {% for playlist in playlists %}
+            <!-- <p><a href="{{ url_for('search_music_direct', filename=playlist.playlist_name) }}">{{ playlist.playlist_name }}</a></p> -->
 
-        button:hover {
-            background-color: #2980b9;
-        }
-    </style>
-</head>
-<body>
-    <h1>Video Player</h1>
-    
-    <video id="myVideo" controls>
-        <source src="your-video-file.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+                <div class="playlist">
+                    <img src="https://source.unsplash.com/random/200x200?sig={{ playlist.playlist_name }} " alt="{{ playlist.playlist_name }}">
+              
+                <p><a href="{{ url_for('search_playlist', filename=playlist.playlist_name) }}"  class="playlist-link">{{ playlist.playlist_name }}</a></p>
+            </div>
+            {% endfor %}
+        </div>
 
-    <button id="playPauseButton" onclick="togglePlayPause()">Play / Pause</button>
-
-    <script>
-        function togglePlayPause() {
-            var video = document.getElementById("myVideo");
-
-            if (video.paused) {
-                video.play();
-            } else {
-                video.pause();
-            }
-        }
-    </script>
-</body>
-</html>
-
+        {% else %}
+            <p>No playlists found.</p>
+        {% endif %}
+    </div>
+{% endblock %}

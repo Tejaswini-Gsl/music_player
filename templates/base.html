@@ -36,15 +36,33 @@
             <ul>
                 <li><a href="/" class="animate__animated animate__fadeInDown">Home</a></li>
                 <!-- <li><a href="#" class="animate__animated animate__fadeInDown">Genres</a></li> -->
-                <!-- <li><a href="/playlist" class="animate__animated animate__fadeInDown">Playlists</a></li> -->
-                <li class="dropdown">
-                    <a href="#" class="animate__animated animate__fadeInDown">Playlists</a>
+                <li><a href="/create_playlist"  class="animate__animated animate__fadeInDown">Playlists</a></li>
+                <!-- <li class="dropdown">
+
+                    <a href="/get_playlists" class="animate__animated animate__fadeInDown">Playlists</a>
                     <div class="dropdown-content" id="playlistDropdown">
-                        <a href="#">Link 1</a>
-    <a href="#">Link 2</a>
-    <a href="#">Link 3</a> <!-- Existing playlists will be added dynamically here -->
+                        <a href="/create_playlist">Create New Playlist</a>
+                        
+                        {% for playlist in playlists %}
+                        <a href="#">{{ playlist.playlist_name }}</a>
+                    {% endfor %}
+                    
                     </div>
-                </li>
+                </li> -->
+                <!-- <li>
+                    <button type="button" onclick="location.href='/get_playlists'" class="collapsible" id="playlistsButton">Playlists</button>
+                <div class="content1" id="playlistContent">
+                <a href="/create_playlist">Create New Playlist</a>
+                        <p>Lorem ipsum...</p>
+                        {% for playlist in playlists %}
+                        <a href="#">{{ playlist.playlist_name }}</a>
+                    {% endfor %}
+                     
+                </div>
+             </li> -->
+
+
+
                 <li><a href="/payment" class="animate__animated animate__fadeInDown">Payment</a></li>
             </ul>
         </nav>
@@ -67,6 +85,7 @@
     <!-- Add this line to include the sidebar CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="{{ url_for('static', filename='playlist_col.js') }}"></script>
 
     {% if payment_successful %}
     <script>
@@ -80,6 +99,7 @@
             alert("Payment was successful!");
         };
     </script>
+    
     {% endif %}
 </body>
 </html>

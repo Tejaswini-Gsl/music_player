@@ -1,0 +1,38 @@
+<!-- _playlist_modal.html -->
+
+{% extends "base.html" %}
+{% block content %}
+<!-- Modal Content -->
+<h2>Select a Playlist</h2>
+
+<!-- Add to Playlist Form -->
+<form action="{{ url_for('add_to_playlist', song_name=song_name) }}" method="POST">
+    <ul>
+        {% for playlist in playlists %}
+            <li>
+                <label>
+                    <input type="radio" name="playlist_name" value="{{ playlist.playlist_name }}" required>
+                    {{ playlist.playlist_name }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Add to Playlist</button>
+</form>
+
+<!-- Remove from Playlist Form -->
+<form action="{{ url_for('remove_from_playlist', song_name=song_name) }}" method="POST">
+    <ul>
+        {% for playlist in playlists %}
+            <li>
+                <label>
+                    <input type="radio" name="playlist_name" value="{{ playlist.playlist_name }}" required>
+                    {{ playlist.playlist_name }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Remove from Playlist</button>
+</form>
+
+{% endblock %}

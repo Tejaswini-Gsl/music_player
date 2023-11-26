@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session,send_file,Response,jsonify
+from flask import Flask, render_template, request, redirect, session,send_file,Response,jsonify, url_for
 import pymongo
 from bson import ObjectId
 from datetime import datetime, timedelta
@@ -22,7 +22,7 @@ try:
     payments = db['payment_info']
     ratings = db['song_rating']
     artists = db['artist']
-    playlist = db['playlist']
+    playlist_db = db['playlist']
     gridfs = GridFS(db)
 except:
     print("ERROR - cannot connect to db")
@@ -252,6 +252,135 @@ def find_rating(song_id):
         avg_rating = total_rating //num_ratings
     return(avg_rating)
 
+# @app.route('/playlist', methods=['GET', 'POST']) 
+# def playlist_list():
+#     if request.method == 'POST':
+#         name = request.form['name']
+#         # description = request.form['description']
+#         db.playlist.insert_one({'playlist_name': name,'user_id':ObjectId(session.get('user_id'))})
+
+#         # new_playlist = Playlist(name=name, description=description)
+#         # db.playlists.insert_one(new_playlist)
+        
+#     playlists = list(db.playlist.find())
+# #             playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+#     print(playlists)
+#     return render_template('playlist.html', playlists=playlists)
+
+
+@app.route('/create_playlist',methods=['GET','POST'])
+def create_playlist():
+    is_logged_in = 'username' in session
+    user_id = 'user_id' in session
+    has_membership = check_logged_in_membership(user_id)
+    if user_id and has_membership:
+        playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+        if request.method == 'POST':
+            new_playlist_name = request.form.get('playlistName')
+            db.playlist.insert_one({'playlist_name': new_playlist_name,'user_id':ObjectId(session.get('user_id'))})
+            playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+        # return (list(playlists))
+        # return jsonify(playlists=list(playlists))
+            print(playlists)
+            return render_template("playlist.html", is_logged_in=is_logged_in,has_membership=has_membership,playlists=playlists)
+        else:
+            playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+        
+            print(playlists)
+        # return Response(json.dumps({'playlists': playlists_new}), content_type='application/json')
+            return render_template("playlist.html", is_logged_in=is_logged_in,playlists=playlists,has_membership=has_membership)
+
+    
+    return render_template('login.html')
+
+# import json
+# from bson import json_util
+@app.route('/playlist_search/<filename>')
+def search_playlist(filename):
+    is_logged_in = 'username' in session
+    user_id = 'user_id' in session
+    has_membership = check_logged_in_membership(user_id)
+     # output = list(songs.find({'song_name':filename}))
+    is_logged_in = 'username' in session
+    user_id = 'user_id' in session 
+    has_membership = check_logged_in_membership(user_id)
+    print("has_membership",has_membership)
+    print(filename)
+    # print(list(db.playlist.find({'playlist_name': filename})))
+    pipeline = [
+        {
+            '$match': {'playlist_name': filename} 
+        }, 
+        {
+           '$lookup': {
+               'from': 'songs',
+               'localField': 'songs_list',
+               'foreignField': '_id', #need to change as '_id'
+               'as': 'song_details'
+            }
+        },
+        {
+            '$unwind': '$song_details'
+        },
+        {
+            '$project': { 
+                'song_name': '$song_details.song_name',
+                'artist_id': '$song_details.artist_id',
+                'genre': '$song_details.genre',
+                'runtime': '$song_details.runtime',
+                'album': '$song_details.album',
+                'playlist': '$name'
+            }
+        }
+    ]
+    
+    results = db.playlist.aggregate(pipeline)
+    print(results)
+    output = list(results)
+    print("whole output",output)
+
+   
+    return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
+
+
+
+@app.route('/add_to_playlist_modal/<song_name>', methods=['GET','POST'])
+def add_to_playlist_modal(song_name):
+
+    playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+
+    return render_template('add_to_playlist_modal.html', song_name=song_name, playlists=playlists)
+
+from flask import request, render_template,redirect
+@app.route('/add_to_playlist/<song_name>', methods=['POST'])
+def add_to_playlist(song_name):
+    playlist_name = request.form.get('playlist_name')
+    user_id = session['user_id']
+    print(user_id)
+    print(playlist_name)
+    print(song_name)
+    playlist_db.update_one(
+            {'playlist_name': playlist_name,'user_id': ObjectId(session.get('user_id'))},
+            {'$push': {'songs_list': song_name}}
+        )
+    
+    playlists = list(playlist_db.find({'user_id': ObjectId(session.get('user_id')),'playlist_name': playlist_name}))
+    print(playlists)
+    return render_template('sp1.html')
+
+@app.route('/remove_to_playlist/<string:song_name>', methods=['POST'])
+def remove_from_playlist(song_name):
+    playlist_name = request.form.get('playlist_name')
+    print(playlist_name)
+    user_id = session['user_id']
+    db.playlist.update_one(
+            {'playlist_name': playlist_name,'user_id': ObjectId(session.get('user_id'))},
+
+                {'$pull': {'songs_list': song_name}}
+            )
+   
+
+    return redirect(url_for('playlist'))
 
 @app.route('/stream_music/<filename>')
 def stream_music(filename):
@@ -324,6 +453,8 @@ def rate_song(song_name, rating):
 
     # Optionally, you can send a response to the client
     return 'Rating saved successfully', 200
+
+
 
 
 if __name__ == '__main__':

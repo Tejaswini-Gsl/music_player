@@ -7,7 +7,7 @@ Add the following styles to custom.css */
 
 .song-item {
     display: grid;
-    grid-template-columns: .5fr 1fr 1.5fr repeat(3, 1fr);
+    grid-template-columns: .5fr 1fr 1.5fr repeat(4, 1fr);
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -18,7 +18,7 @@ Add the following styles to custom.css */
 
   .song-item-header {
     display: grid;
-    grid-template-columns: .5fr 1fr 1.5fr repeat(3, 1fr);
+    grid-template-columns: .5fr 1fr 1.5fr repeat(4, 1fr);
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -71,7 +71,12 @@ Add the following styles to custom.css */
   grid-area: 1/6/2/7;
   justify-self: start;
 }
-
+/* .playlist-header {
+  color: #fff;
+  margin: 0;
+  grid-area:1/7/2/8;
+  justify-self: start;
+} */
 
 /* .artist-header {
   color: #fff;
@@ -98,6 +103,13 @@ Add the following styles to custom.css */
     color: #fff;
     margin: 0;
     grid-area: 1/6/2/7;
+    justify-self: start;
+  }
+
+  .playlist_update {
+    color: #fff;
+    margin: 0;
+    grid-area: 1/7/2/8;
     justify-self: start;
   }
   .rating-options {
@@ -212,4 +224,19 @@ Add the following styles to custom.css */
 
 
 
+  /* Add this CSS to your existing styles or create a new CSS file */
+
   
+  /* Button Hover Effects */
+  /* .playlist_update .add-to-playlist-btn:hover,
+  .playlist_update .remove-from-playlist-btn:hover {
+      opacity: 0.8;
+  } */
+
+  .playlist_update a {
+    text-decoration: none;
+}
+
+.add-to-playlist-btn, .remove-from-playlist-btn {
+  color: white; /* White text color */
+}
