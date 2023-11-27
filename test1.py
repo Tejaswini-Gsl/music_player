@@ -193,7 +193,6 @@ def check_logged_in_membership(user_id):   # done
 
 @app.route('/music', methods=['POST'])
 def search_music():      # done 
-    
     search_query = request.form['song']
     print(search_query)
     is_logged_in = 'username' in session
@@ -206,27 +205,62 @@ def search_music():      # done
         print(type(song_details))
         # If the song is found, get its details
         if len(song_details) > 0:
-            # Get the song_id for fetching ratings
-            song_id = song_details[0]['song_name']
-            print(song_id)
-            
-            # Fetch ratings from the 'song_rating' collection
-            song_details[0]['avg_rating'] = find_rating(song_id)
+            pipeline = [
+        {
+            '$match': {
+                'song_name': {'$regex': search_query, '$options': 'i'}
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'artist',
+                'localField': 'artist_id',
+                'foreignField': '_id',
+                'as': 'artists'
+            }
+        },
+        {
+            '$addFields': {
+                'artist_name': '$artists.artist_name'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'song_rating',
+                'localField': '_id',
+                'foreignField': 'song_id',
+                'as': 'ratings'
+            }
+        },
+        {
+            '$addFields': {
+                'avg_rating': {
+                    '$avg': '$ratings.song_rating'
+                }
+            }
+        }
+       
+    ]
 
-        
-        # Return both the song details and the average rating
-        return render_template('music.html', songs=song_details,is_logged_in=is_logged_in,has_membership=has_membership)
+            result = list(songs.aggregate(pipeline))
+            print("result:",result)
+            
+        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership)
     else:
         # If the song is not found, return an appropriate message
         return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership)
 
     # return render_template('player.html', music_files=music_files,music_id= music_files[0]['_id'])
 
+@app.template_global(name='zip')
+def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
+    return __builtins__.zip(*args, **kwargs)
 
 
-@app.route('/music_search/<filename>')  #need song_id as file name
+@app.route('/music_search/<filename>') # done
 def search_music_direct(filename):
-    output = list(songs.find({'song_name':filename}))  #need song_id as file name objectid(filename)
+    output = list(songs.find({'_id':ObjectId(filename)}))  
+    print("Output:",output)
     is_logged_in = 'username' in session
     user_id = 'user_id' in session 
     has_membership = check_logged_in_membership(user_id)
@@ -234,15 +268,29 @@ def search_music_direct(filename):
 
     if len(output) > 0:
             # Get the song_id for fetching ratings
-            song_id = output[0]['song_name']
+            artist_id = output[0]['artist_id']
+            # print(artist_id)
+            artist_names = []
+            for artist_id in artist_id:
+                artist_details = artists.find_one({'_id': ObjectId(artist_id)})
+                if artist_details:
+                    artist_names.append(artist_details['artist_name'])
+    
+            output[0]['artist_name'] = artist_names
+
+            song_id = output[0]['_id']
 
             output[0]['avg_rating'] = find_rating(song_id)
     return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
 
-@app.route('/stream_music/<filename>')   #need song_id as file name
+@app.route('/stream_music/<filename>')   # done
 def stream_music(filename):
     try: 
-        file = gridfs.find_one({'filename': filename}) #need song_id as file name objectid(filename)
+        output = list(songs.find({'_id':ObjectId(filename)}))  
+        # print("stream_output:",output)
+        music_filename = output[0]['song_name']
+        # print(music_filename)
+        file = gridfs.find_one({'filename': music_filename}) 
         return Response(
                 file.read(),
                 mimetype=file.content_type,
@@ -284,7 +332,7 @@ def create_playlist():
                     error_message = "Playlist name already exists. Please choose a different name."
                     return render_template("playlist.html", is_logged_in=is_logged_in, has_membership=has_membership, playlists=playlists, error_message=error_message)
 
-                db.playlist.insert_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
+                db.playlist.insert_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id')),'songs_list':[]})
             
                  # Refresh the playlists after adding the new playlist
                 playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
@@ -409,46 +457,46 @@ def manage_playlist(song_name):
     return render_template('sp1.html',is_logged_in='user_id' in session,slide_images=slide_images)
        
     
-@app.route('/artist/<artist_id>')  # need to send artist_id
+@app.route('/artist/<artist_id>')    # done
 def artist_profile(artist_id):
     # Fetch artist details from MongoDB
     print (artist_id)
-    artist_details = db.artist.find_one({'artist_name': artist_id})  # need to change artist_name as _id objectid(artist_id)
+    artist_details = db.artist.find_one({'_id': ObjectId(artist_id)})  
    
     is_logged_in = 'username' in session
     if artist_details:
         # Fetch songs associated with the artist
-        songs_info = songs.find({'artist_id': artist_id}) # need to change artist_name as _id objectid(artist_id)
+        songs_info = songs.find({'artist_id': ObjectId(artist_id)}) 
         song_values = list(songs_info)
         # print(song_values[0])
         return render_template('artist.html',is_logged_in=is_logged_in, artist_info=artist_details,song_values= song_values)
     else:
         return 'Artist not found', 404
 
-@app.route('/rate_song/<song_name>/<int:rating>', methods=['POST'])
-def rate_song(song_name, rating):   # need to change song_name to song_id 
+@app.route('/rate_song/<song_id>/<int:rating>', methods=['POST'])
+def rate_song(song_id, rating):   # need to change song_name to song_id -- done
    
     
-    username = session.get('username')
-    existing_rating = ratings.find_one({'song_id': song_name,'user_id': username})  # need to change song_name to song_id 
+    # username = session.get('username')
+    existing_rating = ratings.find_one({'song_id': ObjectId(song_id),'user_id': ObjectId(session.get('user_id'))})  # need to change song_name to song_id 
 
     if existing_rating:
         # If a previous rating exists, update it
         ratings.update_one(
-            {'song_id': song_name,'user_id': username},  # need to change song_id value in rating db too 
+            {'song_id':ObjectId(song_id),'user_id': ObjectId(session.get('user_id'))},  # need to change song_id value in rating db too 
             {'$set': {'song_rating': rating}}
         )
     else:
         # If no previous rating exists, insert a new document
         ratings.insert_one({            
-            'user_id': username,
-            'song_id': song_name,          # need to change song_id value in rating db too 
+            'user_id': ObjectId(session.get('user_id')),
+            'song_id': ObjectId(song_id),          # need to change song_id value in rating db too 
             'song_rating': rating
         })
 
     return 'Rating saved successfully', 200
 
-def find_rating(song_id):    # need to change the song_id 
+def find_rating(song_id):    # need to change the song_id  
     ratings = list(db.song_rating.find({'song_id': song_id})) # need to change the song_id  objectid(song_id)
     print(ratings)
             # Calculate the average rating
@@ -460,6 +508,14 @@ def find_rating(song_id):    # need to change the song_id
         avg_rating = total_rating //num_ratings
     return(avg_rating)
 
+def find_artist_names(artist_id):    # need to change the song_id 
+    print("arstist_id:",artist_id)
+    artist_names = []
+    for artist_id in artist_id:
+        artist_details = artists.find_one({'_id': ObjectId(artist_id)})
+        if artist_details:
+            artist_names.append(artist_details['artist_name'])
+    return(artist_names)
 
 
 

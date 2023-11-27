@@ -76,10 +76,9 @@
     
       <div class="artists">
         <p class="details">
-        {% for artist in song.artist_id %}
-        
-          <span class="artist" onclick="goToArtist('{{artist}}')">
-            {{artist}}
+          {% for artist_id, artist_name in zip(song.artist_id, song.artist_name) %}
+          <span class="artist" onclick="goToArtist('{{ artist_id }}')">
+              {{ artist_name }}
           </span>
        
         {% endfor %}
@@ -121,10 +120,10 @@
    
 
       <!-- Add this block inside the song-item div in your loop -->
-      <div class="rating" id="rating-{{ song.song_name }}">
+      <div class="rating" id="rating-{{ song._id }}">
         <p class="details">
           <span class="rating"> 
-          <select class="rating-stars" onchange="rateSong('{{ song.song_name }}', this.value)">
+          <select class="rating-stars" onchange="rateSong('{{ song._id }}', this.value)">
           <option value="1" {% if song.avg_rating is defined and song.avg_rating == 1 %}selected{% endif %}>⭐️</option>
           <option value="2" {% if song.avg_rating is defined and song.avg_rating == 2 %}selected{% endif %}>⭐️⭐️</option>
           <option value="3" {% if song.avg_rating is defined and song.avg_rating == 3 %}selected{% endif %}>⭐️⭐️⭐️</option>
@@ -139,7 +138,7 @@
   
     
    
-      <audio id="audio-{{ song.song_name }}" src="{{ url_for('stream_music', filename=song.song_name) }}"></audio>
+      <audio id="audio-{{ song.song_name }}" src="{{ url_for('stream_music', filename=song._id) }}"></audio>
 
     </div>
 

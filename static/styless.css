@@ -150,6 +150,8 @@ footer {
     word-wrap: normal;
 }
 
+
+
 #toggle-btn {
     cursor: pointer;
 }
@@ -180,6 +182,9 @@ footer {
     padding: 5px; /* Adjust the padding as needed */
     border: none;
     border-radius: 5px;
+    display: inline-block;
+    vertical-align: middle; /* Adjust as needed */
+    
 }
 
 .search-bar button {
@@ -189,6 +194,11 @@ footer {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+
+    display: inline-block;
+    vertical-align: middle; /* Adjust as needed */
+    margin-left: 5px;
+    
 }
 
 .login-section {

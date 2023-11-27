@@ -60,7 +60,7 @@
         <h3 style="text-transform: uppercase; font-family: 'American Typewriter', serif;">Songs</h3>
         <ul>
             {% for song in song_values %}
-                <li><a href="{{ url_for('search_music_direct', filename=song.song_name) }}">{{ song.song_name }}</a></li>
+                <li><a href="{{ url_for('search_music_direct', filename=song._id) }}">{{ song.song_name }}</a></li>
             {% endfor %}
         </ul>
     </div>
