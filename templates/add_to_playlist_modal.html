@@ -3,36 +3,53 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- Modal Content -->
-<h2>Select a Playlist</h2>
+<style>
+    /* Custom CSS for styling radio buttons */
+    input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        outline: none;
+        margin-right: 10px;
+    }
 
-<!-- Add to Playlist Form -->
-<form action="{{ url_for('add_to_playlist', song_name=song_name) }}" method="POST">
-    <ul>
-        {% for playlist in playlists %}
-            <li>
-                <label>
-                    <input type="radio" name="playlist_name" value="{{ playlist.playlist_name }}" required>
-                    {{ playlist.playlist_name }}
-                </label>
-            </li>
-        {% endfor %}
-    </ul>
-    <button type="submit">Add to Playlist</button>
-</form>
+    input[type="radio"]:checked {
+        background-color: #ffffff;
+    }
+    button:hover {
+        background-color: #555 !important;
+    }
+</style>
 
-<!-- Remove from Playlist Form -->
-<form action="{{ url_for('remove_from_playlist', song_name=song_name) }}" method="POST">
-    <ul>
-        {% for playlist in playlists %}
-            <li>
-                <label>
-                    <input type="radio" name="playlist_name" value="{{ playlist.playlist_name }}" required>
-                    {{ playlist.playlist_name }}
-                </label>
-            </li>
-        {% endfor %}
-    </ul>
-    <button type="submit">Remove from Playlist</button>
-</form>
+<div style="padding: 20px;">
+    <h2 style="text-align: left;font-size: 25px; font-family: 'American Typewriter', serif;">Select a Playlist</h2>
+
+    <!-- Add to / Remove from Playlist Form -->
+    <form action="{{ url_for('manage_playlist', song_name=song_name) }}" method="POST" style="margin-top: 20px; text-align: left;">
+        <ul style="list-style-type: none; padding: 0;">
+            {% for playlist in playlists %}
+                <li style="margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="radio" name="playlist_name" value="{{ playlist.playlist_name }}" required>
+                        <span style="margin-left: 10px; font-size: 16px; font-family: 'American Typewriter', serif;">{{ playlist.playlist_name }}</span>
+                    </label>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Hidden input to indicate the action -->
+        <!-- <input type="hidden" name="action" id="action" value="add"> -->
+        
+        <!-- Button to submit the form for both add and remove -->
+        <button type="submit" name="action" value="add" id="action" style="padding: 8px 12px; margin-right: 10px; background-color: transparent; color: #fff; border: 1px solid #fff; border-radius: 5px; font-size: 16px; font-family: 'American Typewriter', serif;">Add to Playlist</button>
+        
+        <!-- Button to submit the form for removing a song from the playlist -->
+        <button type="submit" name="action" value="remove" id="action" style="padding: 8px 12px; background-color: transparent; color: #fff; border: 1px solid #fff; border-radius: 5px; font-size: 16px; font-family: 'American Typewriter', serif;">Remove from Playlist</button>
+    </form>
+</div>
 
 {% endblock %}

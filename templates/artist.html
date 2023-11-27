@@ -5,17 +5,63 @@
 {% block header %}Artist_info Profile{% endblock %}
 
 {% block content %}
+    <style>
+        /* Custom CSS for styling the artist_info profile */
+        .artist_info-profile {
+            text-align: left;
+            padding: 20px;
+        }
+
+        .artist_info-profile img {
+            display: block;
+            margin: 0 auto; /* Center the image */
+            border-radius: 50%;
+            margin-bottom: 10px;
+
+        }
+
+        .artist_info-profile h2 {
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-family: 'American Typewriter', serif;
+            
+        }
+
+        .artist_info-profile p {
+            margin-bottom: 5px;
+            font-size: 16px; 
+            font-family: 'American Typewriter', serif;
+        }
+
+        .artist_info-profile ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .artist_info-profile ul li {
+            margin-bottom: 5px;
+        }
+
+        .artist_info-profile ul li a {
+            text-decoration: none;
+            color: #f9f5f5;
+            /* font-weight: bold; */
+            font-family: 'American Typewriter', serif;
+        }
+    </style>
+
     <div class="artist_info-profile">
         <img src="https://source.unsplash.com/random/200x200?sig=1" alt="{{ artist_info.name }} Image">
-        <h2>{{ artist_info.name }}</h2>
-        <p><strong>Age:</strong> {{ artist_info.age }}</p>
-        <p><strong>Gender:</strong> {{ artist_info.gender }}</p>
-        <p><strong>Description:</strong> {{ artist_info.artist_description }}</p>
+        <h2 style="text-align: center;text-transform: uppercase;">{{ artist_info.artist_name }}</h2>
+        <p ><strong>AGE: </strong> {{ artist_info.age }}</p>
+        <p ><strong>GENDER: </strong> {{ artist_info.gender }}</p>
+        <p ><strong>DESCRIPTION: </strong> {{ artist_info.artist_description }}</p>
 
-        <h3>Songs</h3>
+        <h3 style="text-transform: uppercase; font-family: 'American Typewriter', serif;">Songs</h3>
         <ul>
             {% for song in song_values %}
-            <li><a href="{{ url_for('search_music_direct', filename=song.song_name) }}">{{ song.song_name }}</a></li>            {% endfor %}
+                <li><a href="{{ url_for('search_music_direct', filename=song.song_name) }}">{{ song.song_name }}</a></li>
+            {% endfor %}
         </ul>
     </div>
 {% endblock %}

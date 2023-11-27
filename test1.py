@@ -29,18 +29,18 @@ except:
 
 slide_images = ["playlist1.jpg", "playlist2.jpg", "playlist3.jpg"]
 
-@app.route('/')
+@app.route('/')   # done
 def index():
     is_logged_in = 'username' in session
     return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images)
 
-@app.route('/playlist')
+@app.route('/playlist')   # done
 def playlist():
     is_logged_in = 'username' in session
     return render_template('playlist.html', is_logged_in=is_logged_in)
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register():          # done
     try:
         if request.method == "POST":
             username = request.form['username']
@@ -68,7 +68,7 @@ def register():
     except Exception as e:
         print(e)
 
-@app.route('/logout')
+@app.route('/logout')  # done
 def logout():
     try:
         session.pop('username', None)
@@ -77,7 +77,7 @@ def logout():
     except Exception as ex:
         print(ex)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])  # done
 def login():
     try:
         if request.method == "POST":
@@ -96,7 +96,7 @@ def login():
     except Exception as e:
         print(e)
 
-@app.route('/payment', methods=['GET', 'POST'])
+@app.route('/payment', methods=['GET', 'POST'])  # done
 def payment():
     try:
         if request.method == 'POST':
@@ -138,7 +138,7 @@ def payment():
     except Exception as ex:
         print(ex)
 
-def update_user(amount,registration_date):
+def update_user(amount,registration_date):  # need to add de registered 
     try:
         user_id = session.get('user_id')
         if amount == '45':
@@ -166,7 +166,7 @@ def update_user(amount,registration_date):
     except Exception as ex:
         print(ex)
 
-def check_logged_in_membership(user_id):
+def check_logged_in_membership(user_id):   # done
     try:
         print ("user_id",user_id)
         user = users.find_one({'_id': ObjectId(session.get('user_id'))})
@@ -192,7 +192,7 @@ def check_logged_in_membership(user_id):
 
 
 @app.route('/music', methods=['POST'])
-def search_music():
+def search_music():      # done 
     
     search_query = request.form['song']
     print(search_query)
@@ -224,9 +224,9 @@ def search_music():
 
 
 
-@app.route('/music_search/<filename>')
+@app.route('/music_search/<filename>')  #need song_id as file name
 def search_music_direct(filename):
-    output = list(songs.find({'song_name':filename}))
+    output = list(songs.find({'song_name':filename}))  #need song_id as file name objectid(filename)
     is_logged_in = 'username' in session
     user_id = 'user_id' in session 
     has_membership = check_logged_in_membership(user_id)
@@ -239,71 +239,77 @@ def search_music_direct(filename):
             output[0]['avg_rating'] = find_rating(song_id)
     return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
 
+@app.route('/stream_music/<filename>')   #need song_id as file name
+def stream_music(filename):
+    try: 
+        file = gridfs.find_one({'filename': filename}) #need song_id as file name objectid(filename)
+        return Response(
+                file.read(),
+                mimetype=file.content_type,
+                headers={'Content-Disposition': f'attachment; filename={filename}'} 
+            )
 
-def find_rating(song_id):
-    ratings = list(db.song_rating.find({'song_id': song_id}))
-    print(ratings)
-            # Calculate the average rating
-    avg_rating = 0
-    num_ratings = len(ratings)
-    if num_ratings > 0:
-        total_rating = sum([rating['song_rating'] for rating in ratings])
-                
-        avg_rating = total_rating //num_ratings
-    return(avg_rating)
-
-# @app.route('/playlist', methods=['GET', 'POST']) 
-# def playlist_list():
-#     if request.method == 'POST':
-#         name = request.form['name']
-#         # description = request.form['description']
-#         db.playlist.insert_one({'playlist_name': name,'user_id':ObjectId(session.get('user_id'))})
-
-#         # new_playlist = Playlist(name=name, description=description)
-#         # db.playlists.insert_one(new_playlist)
-        
-#     playlists = list(db.playlist.find())
-# #             playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
-#     print(playlists)
-#     return render_template('playlist.html', playlists=playlists)
+    except Exception as ex:
+        print(ex)
+#     return send_file(
+#         io.BytesIO(file.read()),
+#         mimetype='audio/mp3',
+#         as_attachment=True,
+#         download_name=f'{file.filename}'
+#     )
 
 
-@app.route('/create_playlist',methods=['GET','POST'])
+
+@app.route('/create_playlist', methods=['GET', 'POST'])   # done 
 def create_playlist():
     is_logged_in = 'username' in session
     user_id = 'user_id' in session
     has_membership = check_logged_in_membership(user_id)
+
     if user_id and has_membership:
         playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+
         if request.method == 'POST':
             new_playlist_name = request.form.get('playlistName')
-            db.playlist.insert_one({'playlist_name': new_playlist_name,'user_id':ObjectId(session.get('user_id'))})
-            playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
-        # return (list(playlists))
-        # return jsonify(playlists=list(playlists))
-            print(playlists)
-            return render_template("playlist.html", is_logged_in=is_logged_in,has_membership=has_membership,playlists=playlists)
-        else:
-            playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
-        
-            print(playlists)
-        # return Response(json.dumps({'playlists': playlists_new}), content_type='application/json')
-            return render_template("playlist.html", is_logged_in=is_logged_in,playlists=playlists,has_membership=has_membership)
+            action = request.form.get('action')
 
-    
+            # Check if the playlist name already exists
+            existing_playlist = db.playlist.find_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
+
+            
+            # Playlist name is unique, insert the new playlist
+            if action == 'add':
+                if existing_playlist:
+                # Playlist name already exists, ask the user to create a playlist with a new name
+                    error_message = "Playlist name already exists. Please choose a different name."
+                    return render_template("playlist.html", is_logged_in=is_logged_in, has_membership=has_membership, playlists=playlists, error_message=error_message)
+
+                db.playlist.insert_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
+            
+                 # Refresh the playlists after adding the new playlist
+                playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+            
+                return render_template("playlist.html", is_logged_in=is_logged_in, has_membership=has_membership, playlists=playlists)
+            
+            elif action == 'remove':
+                db.playlist.delete_many({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
+                # db.playlist.insert_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
+                 # Refresh the playlists after adding the new playlist
+                playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
+            
+                return render_template("playlist.html", is_logged_in=is_logged_in, has_membership=has_membership, playlists=playlists)
+
+        return render_template("playlist.html", is_logged_in=is_logged_in, playlists=playlists, has_membership=has_membership)
+
     return render_template('login.html')
 
-# import json
-# from bson import json_util
-@app.route('/playlist_search/<filename>')
+
+@app.route('/playlist_search/<filename>')  # done
 def search_playlist(filename):
     is_logged_in = 'username' in session
     user_id = 'user_id' in session
     has_membership = check_logged_in_membership(user_id)
      # output = list(songs.find({'song_name':filename}))
-    is_logged_in = 'username' in session
-    user_id = 'user_id' in session 
-    has_membership = check_logged_in_membership(user_id)
     print("has_membership",has_membership)
     print(filename)
     # print(list(db.playlist.find({'playlist_name': filename})))
@@ -329,6 +335,7 @@ def search_playlist(filename):
                 'genre': '$song_details.genre',
                 'runtime': '$song_details.runtime',
                 'album': '$song_details.album',
+                '_id': '$song_details._id',
                 'playlist': '$name'
             }
         }
@@ -344,115 +351,114 @@ def search_playlist(filename):
 
 
 
-@app.route('/add_to_playlist_modal/<song_name>', methods=['GET','POST'])
+@app.route('/add_to_playlist_modal/<song_name>', methods=['GET','POST']) # no changes required only song_id input -- done
 def add_to_playlist_modal(song_name):
 
     playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
 
-    return render_template('add_to_playlist_modal.html', song_name=song_name, playlists=playlists)
+    return render_template('add_to_playlist_modal.html', song_name=song_name, playlists=playlists,is_logged_in='user_id' in session)
 
-from flask import request, render_template,redirect
-@app.route('/add_to_playlist/<song_name>', methods=['POST'])
-def add_to_playlist(song_name):
+
+@app.route('/manage_playlist/<song_name>', methods=['POST'])   # no changes required only song_id input -- done 
+def manage_playlist(song_name):
     playlist_name = request.form.get('playlist_name')
-    user_id = session['user_id']
-    print(user_id)
-    print(playlist_name)
-    print(song_name)
-    playlist_db.update_one(
-            {'playlist_name': playlist_name,'user_id': ObjectId(session.get('user_id'))},
+    action = request.form.get('action')
+    song_name= ObjectId(song_name)
+    # print(playlist_name)
+    # print(action)
+    # print(song_name)
+    # Check if the user is logged in
+    if 'user_id' not in session:
+        return render_template('error.html', message='User not logged in')
+
+    user_id = ObjectId(session.get('user_id'))
+
+    # Check if the playlist exists and is owned by the user
+    playlist_query = {'playlist_name': playlist_name, 'user_id': user_id}
+    playlist = db.playlist.find_one(playlist_query)
+
+    if not playlist:
+        # Playlist doesn't exist or is not owned by the user, handle accordingly
+        return render_template('error.html', message='Playlist not found or not owned by the user')
+
+    # Check if the song already exists in the playlist
+    if action == 'add' and song_name in playlist['songs_list']:
+        # Song already exists in the playlist, handle accordingly
+        return render_template('error.html', message=f"song is already in the playlist")
+
+    if action == 'remove' and song_name not in playlist['songs_list']:
+        # Song doesn't exist in the playlist, handle accordingly
+        return render_template('error.html', message=f"song is not in the playlist")
+
+    # Your logic for adding or removing a song from the playlist
+    if action == 'add':
+        # Add song to the playlist
+        # print(f"Adding '{song_name}' to playlist '{playlist_name}'")
+        db.playlist.update_one(
+            playlist_query,
             {'$push': {'songs_list': song_name}}
         )
+    elif action == 'remove':
+        # Remove song from the playlist
+        # print(f"Removing '{song_name}' from playlist '{playlist_name}'")
+        db.playlist.update_one(
+            playlist_query,
+            {'$pull': {'songs_list': song_name}}
+        )
+    # return redirect(url_for('search_music'))
+    return render_template('sp1.html',is_logged_in='user_id' in session,slide_images=slide_images)
+       
     
-    playlists = list(playlist_db.find({'user_id': ObjectId(session.get('user_id')),'playlist_name': playlist_name}))
-    print(playlists)
-    return render_template('sp1.html')
-
-@app.route('/remove_to_playlist/<string:song_name>', methods=['POST'])
-def remove_from_playlist(song_name):
-    playlist_name = request.form.get('playlist_name')
-    print(playlist_name)
-    user_id = session['user_id']
-    db.playlist.update_one(
-            {'playlist_name': playlist_name,'user_id': ObjectId(session.get('user_id'))},
-
-                {'$pull': {'songs_list': song_name}}
-            )
-   
-
-    return redirect(url_for('playlist'))
-
-@app.route('/stream_music/<filename>')
-def stream_music(filename):
-    try:
-    
-     
-        file = gridfs.find_one({'filename': filename})
-        return Response(
-                file.read(),
-                mimetype=file.content_type,
-                headers={'Content-Disposition': f'attachment; filename={filename}'} 
-            )
-
-    except Exception as ex:
-        print(ex)
-#     return send_file(
-#         io.BytesIO(file.read()),
-#         mimetype='audio/mp3',
-#         as_attachment=True,
-#         download_name=f'{file.filename}'
-#     )
-
-# @app.route('/artist/<artist_id>')
-# def artist_profile(artist_id):
-#     # Fetch artist details from MongoDB
-#     artist = artist.find_one({'artist_name': artist_id})
-
-#     if artist:
-#         return render_template('artist_profile.html', artist=artist)
-#     else:
-#         return 'Artist not found', 404
-    
-@app.route('/artist/<artist_id>')
+@app.route('/artist/<artist_id>')  # need to send artist_id
 def artist_profile(artist_id):
     # Fetch artist details from MongoDB
-    print("######################")
     print (artist_id)
-    artist_name = db.artist.find_one({'artist_name': artist_id})
+    artist_details = db.artist.find_one({'artist_name': artist_id})  # need to change artist_name as _id objectid(artist_id)
    
     is_logged_in = 'username' in session
-    if artist_name:
+    if artist_details:
         # Fetch songs associated with the artist
-        songs_info = songs.find({'artist_id': artist_id})
+        songs_info = songs.find({'artist_id': artist_id}) # need to change artist_name as _id objectid(artist_id)
         song_values = list(songs_info)
-        print(song_values[0])
-        return render_template('artist.html',is_logged_in=is_logged_in, artist_info=artist_name,song_values= song_values)
+        # print(song_values[0])
+        return render_template('artist.html',is_logged_in=is_logged_in, artist_info=artist_details,song_values= song_values)
     else:
         return 'Artist not found', 404
 
 @app.route('/rate_song/<song_name>/<int:rating>', methods=['POST'])
-def rate_song(song_name, rating):
-    # Check if the song has an existing rating
+def rate_song(song_name, rating):   # need to change song_name to song_id 
+   
     
     username = session.get('username')
-    existing_rating = ratings.find_one({'song_id': song_name,'user_id': username})
+    existing_rating = ratings.find_one({'song_id': song_name,'user_id': username})  # need to change song_name to song_id 
 
     if existing_rating:
         # If a previous rating exists, update it
         ratings.update_one(
-            {'song_id': song_name,'user_id': username},
+            {'song_id': song_name,'user_id': username},  # need to change song_id value in rating db too 
             {'$set': {'song_rating': rating}}
         )
     else:
         # If no previous rating exists, insert a new document
-        ratings.insert_one({
+        ratings.insert_one({            
             'user_id': username,
-            'song_id': song_name,
+            'song_id': song_name,          # need to change song_id value in rating db too 
             'song_rating': rating
         })
 
-    # Optionally, you can send a response to the client
     return 'Rating saved successfully', 200
+
+def find_rating(song_id):    # need to change the song_id 
+    ratings = list(db.song_rating.find({'song_id': song_id})) # need to change the song_id  objectid(song_id)
+    print(ratings)
+            # Calculate the average rating
+    avg_rating = 0
+    num_ratings = len(ratings)
+    if num_ratings > 0:
+        total_rating = sum([rating['song_rating'] for rating in ratings])
+                
+        avg_rating = total_rating //num_ratings
+    return(avg_rating)
 
 
 

@@ -104,19 +104,13 @@
         <p class="details">
             <span class="playlist_update">
                 {% if is_logged_in and has_membership %}
-                    <a class="add-to-playlist-btn" href="{{ url_for('add_to_playlist_modal', song_name=song.song_name) }}">
+                    <a class="add-to-playlist-btn" href="{{ url_for('add_to_playlist_modal', song_name=song._id) }}">
                         <i class="material-icons">add</i> <!-- Material Icons add icon -->
-                    </a>
-                    <a class="remove-from-playlist-btn" href="{{ url_for('add_to_playlist_modal', song_name=song.song_name) }}">
-                        <i class="material-icons">remove</i> <!-- Material Icons remove icon -->
                     </a>
                 {% else %}
-                    <button class="add-to-playlist-btn" disabled>
+                    <a class="add-to-playlist-btn" disabled>
                         <i class="material-icons">add</i> <!-- Material Icons add icon -->
-                    </button>
-                    <button class="remove-from-playlist-btn" disabled>
-                        <i class="material-icons">remove</i> <!-- Material Icons remove icon -->
-                    </button>
+                    </a>
                 {% endif %}
             </span>
         </p>

@@ -237,6 +237,6 @@ Add the following styles to custom.css */
     text-decoration: none;
 }
 
-.add-to-playlist-btn, .remove-from-playlist-btn {
+.add-to-playlist-btn {
   color: white; /* White text color */
 }

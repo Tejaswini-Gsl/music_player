@@ -4,16 +4,24 @@
 
 {% block content %}
     <div class="create-playlist">
-        <h2>Create Playlist</h2>
-        <form action="/create_playlist" method="POST">
-            <label for="playlistName">Playlist Name:</label>
-            <input type="text" id="playlistName" name="playlistName" required>
-            <button type="submit">Create Playlist</button>
+        <!-- <h2>Create Playlist</h2> -->
+        <form action="/create_playlist" method="POST" style="text-align: left;">
+            <label for="playlistName" style="display: block;  font-weight: bold; margin-bottom: 10px; font-size: 16px; font-family: 'American Typewriter', serif;">PLAYLIST NAME</label>
+            <input type="text" id="playlistName" name="playlistName" required style="padding: 8px 12px; margin-bottom: 10px; font-size: 16px; font-family: 'American Typewriter', serif; border: 1px solid #fff; border-radius: 5px;">
+        
+            <button type="submit" name="action" value="add" id="action" style="padding: 8px 12px; margin-right: 10px; background-color: transparent; color: #fff; border: 1px solid #fff; border-radius: 5px; font-size: 16px; font-family: 'American Typewriter', serif;">Create Playlist</button>
+        
+            <!-- Button to submit the form for removing a song from the playlist -->
+            <button type="submit" name="action" value="remove" id="action" style="padding: 8px 12px; background-color: transparent; color: #fff; border: 1px solid #fff; border-radius: 5px; font-size: 16px; font-family: 'American Typewriter', serif;">Delete Playlist</button>
+    
         </form>
+        
     </div>
-
+    {% if error_message %}
+    <h2>{{error_message}}</h2>
+    {% endif %}
     <div class="existing-playlists">
-        <h2>Existing Playlists</h2>
+        <h3 style=" font-family: 'American Typewriter', serif;">EXISTING PLAYLISTS</h3>
         {% if playlists %}
         <div class="playlist-container">
             {% for playlist in playlists %}
