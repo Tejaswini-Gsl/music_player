@@ -102,7 +102,7 @@ header {
 }
 
 .playlist {
-    width: 250px;
+    width: 150px;
     background-color: #4e3066;
     border-radius: 5px;
     overflow: hidden;
@@ -112,7 +112,7 @@ header {
 }
 
 .playlist img {
-    width: 100%;
+    width: 50%;
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -260,7 +260,7 @@ footer {
 }
 
 .playlist img {
-    width: 100%;
+    width: 50%;
     height: auto;
     border-radius: 8px; /* Optional: Add rounded corners to images */
     transition: transform 0.3s ease-in-out;

@@ -28,11 +28,13 @@ except:
     print("ERROR - cannot connect to db")
 
 slide_images = ["playlist1.jpg", "playlist2.jpg", "playlist3.jpg"]
-
+genres_list= songs.distinct('genre')
+all_genres = [genre.strip() for genres in genres_list for genre in genres.split(',')]
+genres = list(set(all_genres))
 @app.route('/')   # done
 def index():
     is_logged_in = 'username' in session
-    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images)
+    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images,genres=genres)
 
 @app.route('/playlist')   # done
 def playlist():
@@ -189,6 +191,67 @@ def check_logged_in_membership(user_id):   # done
 
     except Exception as ex:
         print(ex)
+
+
+@app.route('/genre_music_search/<filename>') # done
+def search_genre_music(filename):     # done 
+    search_query = filename
+    print(search_query)
+    is_logged_in = 'username' in session
+    user_id = 'user_id' in session
+    has_membership = check_logged_in_membership(user_id)
+    print("has_membership",has_membership)
+    if search_query:
+    # Search for the song details in the 'songs' collection
+        song_details = list(songs.find({'genre': {'$regex': search_query, '$options': 'i'}}))
+        print(type(song_details))
+        print(song_details)
+        # If the song is found, get its details
+        if len(song_details) > 0:
+            pipeline = [
+        {
+            '$match': {
+                'genre': {'$regex': search_query, '$options': 'i'}
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'artist',
+                'localField': 'artist_id',
+                'foreignField': '_id',
+                'as': 'artists'
+            }
+        },
+        {
+            '$addFields': {
+                'artist_name': '$artists.artist_name'
+            }
+        },
+        {
+            '$lookup': {
+                'from': 'song_rating',
+                'localField': '_id',
+                'foreignField': 'song_id',
+                'as': 'ratings'
+            }
+        },
+        {
+            '$addFields': {
+                'avg_rating': {
+                    '$avg': '$ratings.song_rating'
+                }
+            }
+        }
+       
+    ]
+
+            result = list(songs.aggregate(pipeline))
+            print("result:",result)
+            
+        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership)
+    else:
+        # If the song is not found, return an appropriate message
+        return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership)
 
 
 @app.route('/music', methods=['POST'])
