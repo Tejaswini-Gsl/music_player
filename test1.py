@@ -346,14 +346,21 @@ def search_music_direct(filename):
             output[0]['avg_rating'] = find_rating(song_id)
     return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
 
+
+from bson import Regex
+import re
+
+
 @app.route('/stream_music/<filename>')   # done
 def stream_music(filename):
     try: 
         output = list(songs.find({'_id':ObjectId(filename)}))  
         # print("stream_output:",output)
         music_filename = output[0]['song_name']
+        # Convert the filename to a case-insensitive regular expression
+        filename_regex = Regex(f'^{re.escape(music_filename)}$', 'i')
         # print(music_filename)
-        file = gridfs.find_one({'filename': music_filename}) 
+        file = gridfs.find_one({'filename': filename_regex}) 
         return Response(
                 file.read(),
                 mimetype=file.content_type,
