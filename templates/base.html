@@ -13,13 +13,15 @@
         <div id="toggle-btn"><i class="material-icons">menu</i></div>
         <div class="search-login-section">
             <div class="search-bar">
+                {% if not is_admin %}
                 <form action="/music" method="POST">
                     <input type="text" placeholder="search" name="song">
                     <button type="submit" class="material-icons"> search</button>
                 </form>
+                {% endif %}
             </div>
             <div class="login-section">
-                {% if is_logged_in %}
+                {% if is_logged_in or is_admin %}
                     <img src="{{ url_for('static', filename='playlist1.jpg') }}" alt="User Profile" class="profile-picture">
                     <a href="/logout" class="logout-button">Logout</a>
                 {% else %}
@@ -34,36 +36,16 @@
         <nav class="sidebar">
             <h1 class="animate__animated animate__fadeIn">Music Stream</h1>
             <ul>
-                <li><a href="/" class="animate__animated animate__fadeInDown">Home</a></li>
                 <!-- <li><a href="#" class="animate__animated animate__fadeInDown">Genres</a></li> -->
+                {% if is_admin %}
+                <li><a href="/admin_user" class="animate__animated animate__fadeInDown">user</a></li>
+                <li><a href="/admin_song" class="animate__animated animate__fadeInDown">Songs</a></li>
+                <li><a href="/admin_artist" class="animate__animated animate__fadeInDown">Artists</a></li>
+                {% else %}
+                <li><a href="/" class="animate__animated animate__fadeInDown">Home</a></li>
                 <li><a href="/create_playlist"  class="animate__animated animate__fadeInDown">Playlists</a></li>
-                <!-- <li class="dropdown">
-
-                    <a href="/get_playlists" class="animate__animated animate__fadeInDown">Playlists</a>
-                    <div class="dropdown-content" id="playlistDropdown">
-                        <a href="/create_playlist">Create New Playlist</a>
-                        
-                        {% for playlist in playlists %}
-                        <a href="#">{{ playlist.playlist_name }}</a>
-                    {% endfor %}
-                    
-                    </div>
-                </li> -->
-                <!-- <li>
-                    <button type="button" onclick="location.href='/get_playlists'" class="collapsible" id="playlistsButton">Playlists</button>
-                <div class="content1" id="playlistContent">
-                <a href="/create_playlist">Create New Playlist</a>
-                        <p>Lorem ipsum...</p>
-                        {% for playlist in playlists %}
-                        <a href="#">{{ playlist.playlist_name }}</a>
-                    {% endfor %}
-                     
-                </div>
-             </li> -->
-
-
-
                 <li><a href="/payment" class="animate__animated animate__fadeInDown">Payment</a></li>
+                {% endif %}
             </ul>
         </nav>
 

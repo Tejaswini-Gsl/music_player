@@ -1,0 +1,130 @@
+<!-- templates/user.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+</style>
+
+<h2>User Admin Page</h2>
+
+<div class="search-container">
+    <label for="search">Search: </label>
+    <input type="text" id="search" class="search-input" onkeyup="filterTable()" placeholder="Enter a name...">
+   <a href="{{ url_for('admin_add', filename='a_user') }}">add</a>
+<!-- 
+    <button onclick="addNewRow()" class="btn">Add</button> -->
+</div>
+
+<table id="userTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Membership</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user._id }}</td>
+            <td>{{ user.user_name }}</td>
+            <td>{{ user.user_email }}</td>
+            <td>{{ user.user_password }}</td>
+            <td>{{ user.user_gender }}</td>
+            <td>{{ user.user_age }}</td>
+            <td>{{ user.membership }}</td>
+            <td>
+                <a href="{{ url_for('admin_edit', filename='a_user', values=user._id) }}" class="btn">Edit</a>
+                <a href="{{ url_for('admin_delete', filename='a_user',file_id=user._id,song_name='not_required') }}" class="btn" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    // Array of column names
+    var columnNames = ["ID", "Name", "Email", "Password", "Gender", "Age", "Membership"];
+
+    function filterTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("userTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                tr[i].style.display = txtValue.toUpperCase().includes(filter) ? "" : "none";
+            }
+        }
+    }
+
+//     function addNewRow() {
+//         var table = document.getElementById("userTable").getElementsByTagName('tbody')[0];
+//         var newRow = table.insertRow(table.rows.length);
+//         var cellCount = table.rows[0].cells.length;
+
+//         for (var i = 0; i < cellCount; i++) {
+//             var cell = newRow.insertCell(i);
+//             cell.innerHTML = "<input type='text' placeholder='Enter value' name='" + columnNames[i] + "'>";
+//         }
+
+//         // Add a cell for the submit button
+//         var buttonsCell = newRow.insertCell(cellCount);
+
+// // Add the "Submit" button
+//     buttonsCell.innerHTML += "<button onclick='submitNewRow()'>Submit</button>";
+
+// // Add the "Add Song" button
+//     buttonsCell.innerHTML += "<button onclick='addNewSong()'>Add Song</button>";
+
+    
+    
+//     }
+
+//     function submitNewRow() {
+//         var table = document.getElementById("userTable").getElementsByTagName('tbody')[0];
+//         var lastRow = table.rows[table.rows.length - 1];
+//         var inputFields = lastRow.getElementsByTagName('input');
+
+//         // Create a form dynamically
+//         var form = document.createElement('form');
+//         form.action = '/admin_add';  // Set the Flask route
+//         form.method = 'POST';  // Set the HTTP method
+
+//         // Add input fields to the form with actual column names
+//         for (var i = 1; i < inputFields.length; i++) {
+//             var input = document.createElement('input');
+//             input.type = 'hidden';
+//             input.name = columnNames[i];
+//             input.value = inputFields[i].value;
+//             form.appendChild(input);
+//         }
+
+//         // Append the form to the document and submit it
+//         document.body.appendChild(form);
+//         form.submit();
+//     }
+</script>
+
+{% endblock %}

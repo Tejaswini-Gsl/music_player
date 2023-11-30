@@ -1,0 +1,78 @@
+<!-- templates/user.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;  /* Add border to cells */
+        padding: 8px;
+        text-align: left;
+    }
+
+  
+</style>
+<h2>User Admin Page</h2>
+
+<div class="search-container">
+    <label for="search">Search: </label>
+    <input type="text" id="search" class="search-input" onkeyup="filterTable()" placeholder="Enter a name...">
+    <a href="{{ url_for('admin_add', filename='a_song') }}">add</a>
+
+</div>
+
+<table id="userTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>genre</th>
+            <th>runtime</th>
+            <th>album</th>
+            <th>artist</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for song in songs %}
+        <tr>
+            <td>{{ song._id }}</td>
+            <td>{{ song.song_name }}</td>
+            <td>{{ song.genre }}</td>
+            <td>{{ song.runtime }}</td>
+            <td>{{ song.album }}</td>
+            <td>{{ song.artist_id }}</td>
+            <td>
+                <a href="{{ url_for('admin_edit', filename='a_song', values=song._id) }}" class="btn">Edit</a>
+                <a href="{{ url_for('admin_delete', filename='a_song',file_id=song._id ,song_name= song.song_name) }}" class="btn" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function filterTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("userTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                tr[i].style.display = txtValue.toUpperCase().includes(filter) ? "" : "none";
+            }
+        }
+    }
+</script>
+
+{% endblock %}

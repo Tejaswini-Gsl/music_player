@@ -17,7 +17,7 @@ try:
     db = mongo.sonic_bilss
     mongo.server_info()
     users = db['user']
-    admins = db['admins']
+    admin = db['admin']
     songs = db['songs']
     payments = db['payment_info']
     ratings = db['song_rating']
@@ -75,7 +75,7 @@ def logout():
     try:
         session.pop('username', None)
         session.pop('user_id',None)
-        return render_template('sp1.html', is_logged_in=False, slide_images=slide_images)
+        return render_template('sp1.html', is_logged_in=False, slide_images=slide_images,genres=genres)
     except Exception as ex:
         print(ex)
 
@@ -85,14 +85,29 @@ def login():
         if request.method == "POST":
             username = request.form['username']
             password = request.form['password']
-            user = users.find_one({'user_name': username, 'user_password': password})
+            selected_users =  request.form.get('selected_users')
+            # # Process the selected users as needed (e.g., print, save to a database, etc.)
+            print("Selected Users:", selected_users)
+            if selected_users == 'admin':
+                admin_value = admin.find_one({'admin_name': username, 'admin_password': password})
+                user_all = list(users.find())
+                if admin_value:
+                    print(admin_value)
+                    session['username'] = username
+                    session['user_id'] = str(admin['_id'])
+                    return render_template('admin_user.html', is_logged_in=True,is_admin=True,users=user_all)
+                else:
+                    return render_template('error.html',message='not a admin')
             
-            if user:
-                session['username'] = username
-                session['user_id'] = str(user['_id'])
-                return render_template('sp1.html', is_logged_in=True, slide_images=slide_images)
             else:
-                return render_template('register.html')
+                user = users.find_one({'user_name': username, 'user_password': password})
+                
+                if user:
+                    session['username'] = username
+                    session['user_id'] = str(user['_id'])
+                    return render_template('sp1.html', is_logged_in=True, slide_images=slide_images,genres=genres)
+                else:
+                    return render_template('register.html')
         else:
             return render_template('login.html')
     except Exception as e:
@@ -131,9 +146,9 @@ def payment():
                 is_logged_in = 'user_id' in session
 
                 if referring_page and 'login' in referring_page:
-                    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images, payment_successful=True, show_as_index=True)
+                    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images, payment_successful=True, show_as_index=True,genres=genres)
                 else:
-                    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images, payment_successful=True)
+                    return render_template('sp1.html', is_logged_in=is_logged_in, slide_images=slide_images, payment_successful=True,genres=genres)
                 # return render_template('sp1.html', is_logged_in=True, slide_images=slide_images,payment_successful=True)
 
         return render_template('payment.html', is_logged_in='username' in session)
@@ -411,8 +426,6 @@ def create_playlist():
             
             elif action == 'remove':
                 db.playlist.delete_many({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
-                # db.playlist.insert_one({'playlist_name': new_playlist_name, 'user_id': ObjectId(session.get('user_id'))})
-                 # Refresh the playlists after adding the new playlist
                 playlists = list(db.playlist.find({'user_id': ObjectId(session.get('user_id'))}))
             
                 return render_template("playlist.html", is_logged_in=is_logged_in, has_membership=has_membership, playlists=playlists)
@@ -524,7 +537,7 @@ def manage_playlist(song_name):
             {'$pull': {'songs_list': song_name}}
         )
     # return redirect(url_for('search_music'))
-    return render_template('sp1.html',is_logged_in='user_id' in session,slide_images=slide_images)
+    return render_template('sp1.html',is_logged_in='user_id' in session,slide_images=slide_images,genres=genres)
        
     
 @app.route('/artist/<artist_id>')    # done
@@ -587,7 +600,139 @@ def find_artist_names(artist_id):    # need to change the song_id
             artist_names.append(artist_details['artist_name'])
     return(artist_names)
 
+@app.route('/admin_song')    
+def admin_songs():
+    songs = list(db.songs.find())
+    return render_template('admin_song.html', songs=songs,is_admin=True)
 
+@app.route('/admin_artist')    
+def admin_artist():
+
+    artists = list(db.artist.find())
+    return render_template('admin_artist.html', artists=artists,is_admin=True)
+@app.route('/admin_user')    
+def admin_user():
+    users = list(db.user.find())
+    return render_template('admin_user.html', users=users,is_admin=True)
+
+
+@app.route('/admin_edit/<filename>/<values>', methods=['GET','POST'])
+def admin_edit(filename,values):
+    # user_values = values.split(',')
+    print(values)
+    if filename == 'a_user':
+        labels_user = ['user_name', 'user_email', 'user_password','user_gender','user_age']  # Replace with your dynamic labels
+        labels= labels_user
+        heading = 'EDIT USER'
+        
+    elif filename == 'a_artist':
+        labels_artist = ['artist_name', 'age', 'gender','artist_description']  # Replace with your dynamic labels
+        labels= labels_artist
+        heading = 'EDIT ARTIST'
+    elif filename == 'a_song':
+        labels_song = ['song_name', 'genre', 'runtime','album','artist_id']  # Replace with your dynamic labels
+        labels= labels_song
+        heading = 'EDIT SONG'
+
+    if request.method == 'POST':
+        if filename == 'a_user':
+            form_data = {label: request.form.get(label) for label in labels[1:]}
+            update_query = {
+                '$set': form_data
+                                    }
+            # print(form_data)
+            users.update_one({'_id': ObjectId(values)}, update_query)
+            return(admin_user())
+        
+        elif filename == 'a_artist':
+            form_data = {label: request.form.get(label) for label in labels[1:]}
+            update_query = {
+                '$set': form_data
+                                    }
+            db.artist.update_one({'_id': ObjectId(values)}, update_query)
+            return(admin_artist())
+        elif filename == 'a_song':
+            form_data = {label: request.form.get(label) for label in labels[1:]}
+            update_query = {
+                '$set': form_data
+                                    }
+            db.songs.update_one({'_id': ObjectId(values)}, update_query)
+            return(admin_songs())
+
+            # print(audio_file)
+        # Do something with the data
+
+        
+
+    return render_template('admin_add.html', labels=labels,is_admin=True, is_edit  = True,values= values,heading=heading)
+
+@app.route('/admin_delete/<string:filename>/<file_id>/<song_name>')
+def admin_delete(filename,file_id,song_name):
+    print(filename)
+    if filename == 'a_user':
+        print("hello")
+        db.user.delete_one({"_id":ObjectId(file_id)})
+        return(admin_user())
+
+    elif filename == 'a_artist':
+        db.artist.delete_one({"_id":ObjectId(file_id)})
+
+        return(admin_artist())
+
+        
+    elif filename == 'a_song':
+        filename_regex = Regex(f'^{re.escape(song_name)}$', 'i')
+        file_to_delete = gridfs.find_one({'filename': filename_regex})
+        if file_to_delete:
+            gridfs.delete(file_to_delete._id)
+        db.songs.delete_one({"_id":ObjectId(file_id)})
+
+        return(admin_songs())
+
+
+
+    return render_template('error.html')
+
+@app.route('/admin_add/<filename>', methods=['GET','POST'])
+def admin_add(filename):
+
+    if filename == 'a_user':
+        labels_user = ['user_name', 'user_email', 'user_password','user_gender','user_age']  # Replace with your dynamic labels
+        labels= labels_user
+        heading = 'NEW USER'
+    elif filename == 'a_artist':
+        labels_artist = ['artist_name', 'age', 'gender','artist_description']  # Replace with your dynamic labels
+        labels= labels_artist
+        heading = 'NEW ARTIST'
+    elif filename == 'a_song':
+        labels_song = ['song_name', 'genre', 'runtime','album','artist_id','upload_song']  # Replace with your dynamic labels
+        labels= labels_song
+        heading = 'NEW SONG'
+    if request.method == 'POST':
+        if filename == 'a_user':
+            form_data = {label: request.form.get(label) for label in labels}
+            users.insert_one(form_data)
+            return(admin_user())
+        elif filename == 'a_artist':
+            form_data = {label: request.form.get(label) for label in labels}
+            db.artist.insert_one(form_data)
+            return(admin_artist())
+        elif filename == 'a_song':
+            form_data = {
+                label: [ObjectId(value) for value in request.form.getlist(label)] if label == 'artist_id' else request.form.get(label)
+                                for label in labels[:-1]
+                                }           
+            audio_file = request.files['audioFile']
+            file_id = gridfs.put(audio_file, filename=request.form.get('song_name'))
+            db.songs.insert_one(form_data)
+            return(admin_songs())
+
+            # print(audio_file)
+        # Do something with the data
+
+        
+
+    return render_template('admin_add.html', labels=labels,is_admin=True,heading=heading)
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

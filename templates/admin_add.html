@@ -1,0 +1,38 @@
+<!-- templates/new_page.html -->
+{% extends 'base.html' %}
+
+{% block title %}New Page{% endblock %}
+
+{% block content %}
+    <style>
+        /* CSS styles for input fields */
+        .input-field {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+        }
+    </style>
+
+    <h2  >{{heading}}</h2>
+
+    <form action="#" method="POST" enctype="multipart/form-data" style="max-width: 400px; margin: auto;">
+        {% for label in labels %}
+            <div style="margin-bottom: 10px;">
+                <label for="{{ label|lower }}">{{ label }}:</label>
+
+                {% if label == "upload_song" %}
+                    <input type="file" name="audioFile" id="audioFile" accept=".mp3, .wav, .ogg" required>
+                {% else %}  
+                    <input type="text" class="input-field" id="{{ label|lower }}" name="{{ label|lower }}" required>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+{% endblock %}
