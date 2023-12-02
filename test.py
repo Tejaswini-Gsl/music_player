@@ -1,13 +1,28 @@
-from werkzeug.datastructures import ImmutableMultiDict
+import smtplib
 
-data = ImmutableMultiDict([('ID', ''), ('Name', 'sfg'), ('Email', 'fdg'), ('Password', 'dfg'), ('Gender', 'dg'), ('Age', '12'), ('Membership', ''), ('undefined', '')])
+gmail_user = 'jennifermorphy8@gmail.com'
+gmail_password = 'zzyk zccc hxwo jrrx'
+user_email = 'gtejaswini815@gmail.com'
 
-# Keys you want to retrieve dynamically
-# keys_to_fetch = ['Name', 'Email']
+sent_from = gmail_user
+to = user_email
+subject = 'Lorem ipsum dolor sit amet'
+body = 'consectetur adipiscing elit'
 
-# Fetch values for the specified keys dynamically
-values = {key: data.get(key, '') for key in data}
+email_text = """\
+From: %s
+To: %s
+Subject: %s
 
-# Print the values
-for key, value in values.items():
-    print(f"{key}: {value}")
+%s
+""" % (sent_from,to, subject, body)
+
+try:
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    smtp_server.ehlo()
+    smtp_server.login(gmail_user, gmail_password)
+    smtp_server.sendmail(sent_from, to, email_text)
+    smtp_server.close()
+    print ("Email sent successfully!")
+except Exception as ex:
+    print ("Something went wrong….",ex)

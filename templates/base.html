@@ -22,7 +22,9 @@
             </div>
             <div class="login-section">
                 {% if is_logged_in or is_admin %}
+                <a href="/update_prof">
                     <img src="{{ url_for('static', filename='playlist1.jpg') }}" alt="User Profile" class="profile-picture">
+                </a>
                     <a href="/logout" class="logout-button">Logout</a>
                 {% else %}
                     <a href="/register" class="signup-button">Sign Up</a>

@@ -22,14 +22,6 @@
                 <i class="bx bx-envelope"></i>
             </div>
             <div class="input-field">
-                <input type="password" class="input" id="pwd" placeholder="Enter password" name="password" required>
-                <i class="bx bx-lock-alt"></i>
-            </div>
-            <div class="input-field">
-                <input type="password" class="input" id="pwd" placeholder="Confirm password" name="confirm_password" required>
-                <i class="bx bx-lock-alt"></i>
-            </div>
-            <div class="input-field">
                 <input type="number" class="input" id="age" placeholder="Age" name="age" required>
                 <i class="bx bx-lock-alt"></i>
             </div>
@@ -38,11 +30,30 @@
                 <i class="bx bx-lock-alt"></i>
             </div>
             <div class="input-field">
-                <input type="submit" value="Register" class="submit">
+                <input type="password" class="input" id="password" placeholder="Enter password" name="password" onchange='check_pass();' required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+            <div class="input-field">
+                <input type="password" class="input" id="confirm_password" placeholder="Confirm password" name="confirm_password" onchange='check_pass();' required>
+                <i class="bx bx-lock-alt"></i>
+            </div>
+          
+            <div class="input-field">
+                <input type="submit" value="Register" class="submit"  id="submit" disabled/>
                 <i class="bx bx-lock-alt"></i>
             </div>
         </form>
     </div>
     </div>
+    <script>
+        function check_pass() {
+    if (document.getElementById('password').value ==
+            document.getElementById('confirm_password').value) {
+        document.getElementById('submit').disabled = false;
+    } else {
+        document.getElementById('submit').disabled = true;
+    }
+}
+    </script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='update_prof.css') }}">
+</head>
+<body>
+
+    
+    <form action="/update_prof" method="post">
+
+
+	<h1>Profile Update</h1>
+
+        <label for="name">Name:{{users.user_name}}</label>
+        <input type="text" name="name" id="name" placeholder="Name" required>
+
+        <label for="email">Email:{{users.user_email}}</label>
+        <input type="email" name="email" id="email" placeholder="Email" required>
+	<label for="membership" id="membership">Membership:{{users.membership}}  ({{days_until_expiry}} days remaining)</label>
+        <label for="membership">Cancle Plan</label>
+        <select id="membership" name="membership">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <input type="submit" class="submit" value="Update">
+    </form>
+
+  
+
+</body>
+</html>

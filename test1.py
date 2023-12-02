@@ -4,6 +4,7 @@ from bson import ObjectId
 from datetime import datetime, timedelta
 from gridfs import GridFS
 import io
+import sub_email
 
 app = Flask(__name__)
 app.secret_key = 'some secret key'
@@ -57,7 +58,8 @@ def register():          # done
                 'user_password': password,
                 'user_email': email,
                 'user_age': age,
-                'user_gender': gender
+                'user_gender': gender,
+                'membership': 'no membership'
             }
             
             users.insert_one(user)
@@ -105,6 +107,7 @@ def login():
                 if user:
                     session['username'] = username
                     session['user_id'] = str(user['_id'])
+                    sub_email.check(user['_id'])
                     return render_template('sp1.html', is_logged_in=True, slide_images=slide_images,genres=genres)
                 else:
                     return render_template('register.html')
@@ -164,8 +167,15 @@ def update_user(amount,registration_date):  # need to add de registered
         elif amount == '20':
             membership = 'month'
             end_date = registration_date + timedelta(days=30)
+        # elif amount == '-':
+        #     membership = 'no membership'
+        #     end_date = registration_date 
+
         else:
             membership = 'no membership'
+            end_date = registration_date
+
+
         users.update_one(
                     {'_id': ObjectId(user_id)},
                     {
@@ -263,70 +273,74 @@ def search_genre_music(filename):     # done
             result = list(songs.aggregate(pipeline))
             print("result:",result)
             
-        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership)
+        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership,is_playlist= True)
     else:
         # If the song is not found, return an appropriate message
-        return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership)
+        return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership,is_playlist= True)
 
 
 @app.route('/music', methods=['POST'])
 def search_music():      # done 
     search_query = request.form['song']
     print(search_query)
+    song_details = list(songs.find({'song_name': {'$regex': search_query, '$options': 'i'}}))
     is_logged_in = 'username' in session
     user_id = 'user_id' in session
     has_membership = check_logged_in_membership(user_id)
-    print("has_membership",has_membership)
-    if search_query:
-    # Search for the song details in the 'songs' collection
-        song_details = list(songs.find({'song_name': {'$regex': search_query, '$options': 'i'}}))
-        print(type(song_details))
-        # If the song is found, get its details
-        if len(song_details) > 0:
+    if len(song_details) > 0:
+    
+        # has_membership = check_logged_in_membership(user_id)
+        print("has_membership",has_membership)
+        if search_query:
+        # Search for the song details in the 'songs' collection
+            # song_details = list(songs.find({'song_name': {'$regex': search_query, '$options': 'i'}}))
+            print(song_details)
+            # If the song is found, get its details
+            
             pipeline = [
-        {
-            '$match': {
-                'song_name': {'$regex': search_query, '$options': 'i'}
-            }
-        },
-        {
-            '$lookup': {
-                'from': 'artist',
-                'localField': 'artist_id',
-                'foreignField': '_id',
-                'as': 'artists'
-            }
-        },
-        {
-            '$addFields': {
-                'artist_name': '$artists.artist_name'
-            }
-        },
-        {
-            '$lookup': {
-                'from': 'song_rating',
-                'localField': '_id',
-                'foreignField': 'song_id',
-                'as': 'ratings'
-            }
-        },
-        {
-            '$addFields': {
-                'avg_rating': {
-                    '$avg': '$ratings.song_rating'
+            {
+                '$match': {
+                    'song_name': {'$regex': search_query, '$options': 'i'}
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'artist',
+                    'localField': 'artist_id',
+                    'foreignField': '_id',
+                    'as': 'artists'
+                }
+            },
+            {
+                '$addFields': {
+                    'artist_name': '$artists.artist_name'
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'song_rating',
+                    'localField': '_id',
+                    'foreignField': 'song_id',
+                    'as': 'ratings'
+                }
+            },
+            {
+                '$addFields': {
+                    'avg_rating': {
+                        '$avg': '$ratings.song_rating'
+                    }
                 }
             }
-        }
-       
-    ]
+        
+        ]
 
             result = list(songs.aggregate(pipeline))
             print("result:",result)
             
-        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership)
+        return render_template('music.html', songs=result,is_logged_in=is_logged_in,has_membership=has_membership,is_playlist= True)
     else:
         # If the song is not found, return an appropriate message
-        return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership)
+        return render_template('music.html', message="Song not found",is_logged_in=is_logged_in,has_membership= has_membership,is_playlist= True)
 
     # return render_template('player.html', music_files=music_files,music_id= music_files[0]['_id'])
 
@@ -359,7 +373,7 @@ def search_music_direct(filename):
             song_id = output[0]['_id']
 
             output[0]['avg_rating'] = find_rating(song_id)
-    return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
+    return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership,is_playlist= True)
 
 
 from bson import Regex
@@ -376,20 +390,21 @@ def stream_music(filename):
         filename_regex = Regex(f'^{re.escape(music_filename)}$', 'i')
         # print(music_filename)
         file = gridfs.find_one({'filename': filename_regex}) 
-        return Response(
-                file.read(),
-                mimetype=file.content_type,
-                headers={'Content-Disposition': f'attachment; filename={filename}'} 
-            )
+        return send_file(
+        io.BytesIO(file.read()),
+        mimetype='audio/mp3',
+        as_attachment=True,
+        download_name=f'{file.filename}'
+    )
+        # return Response(
+        #         file.read(),
+        #         mimetype=file.content_type,
+        #         headers={'Content-Disposition': f'attachment; filename={filename}'} 
+        #     )
 
     except Exception as ex:
         print(ex)
-#     return send_file(
-#         io.BytesIO(file.read()),
-#         mimetype='audio/mp3',
-#         as_attachment=True,
-#         download_name=f'{file.filename}'
-#     )
+
 
 
 
@@ -478,7 +493,7 @@ def search_playlist(filename):
     print("whole output",output)
 
    
-    return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership)
+    return render_template('music.html', songs=output,is_logged_in=is_logged_in,has_membership= has_membership,is_playlist= False)
 
 
 
@@ -636,7 +651,7 @@ def admin_edit(filename,values):
 
     if request.method == 'POST':
         if filename == 'a_user':
-            form_data = {label: request.form.get(label) for label in labels[1:]}
+            form_data = {label: request.form.get(label) for label in labels}
             update_query = {
                 '$set': form_data
                                     }
@@ -733,6 +748,38 @@ def admin_add(filename):
         
 
     return render_template('admin_add.html', labels=labels,is_admin=True,heading=heading)
+
+@app.route('/update_prof', methods=['GET','POST'])
+def update_prof():
+    print("triggered")
+    user_id = ObjectId(session.get('user_id'))
+    updated_user = users.find_one({'_id': user_id})
+    start_date = updated_user['start_date']
+    end_date= updated_user['end_date']
+    membership = updated_user['membership']
+    days_until_expiry = (end_date - datetime.utcnow()).days
+
+    if request.method == 'POST':
+            if request.form.get("membership") == "Yes":
+                membership = "no membership"
+                start_date = datetime.utcnow()
+                end_date = datetime.utcnow()
+
+            update_query = {
+                '$set':{
+                    "user_name": request.form['name'],
+                    "user_email": request.form['email'],
+                    "membership": membership,
+                    "start_date": start_date,
+                    "end_date":end_date,
+                }
+                                    }
+            print("updatingg........")
+            users.update_one({'_id': user_id}, update_query)
+            return render_template('error.html',message="user got updated")
+
+    return render_template('update_prof.html', users=updated_user,is_logged_in=True,days_until_expiry=days_until_expiry)
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
