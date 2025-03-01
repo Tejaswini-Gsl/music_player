@@ -15,6 +15,7 @@ try:
         port=27017,
         serverSelectionTimeoutMS=1000
     )
+    
     db = mongo.sonic_bilss
     mongo.server_info()
     users = db['user']
